@@ -20,28 +20,32 @@
 
 union Value {float fVal; int iVal; void *mVal;};
 typedef union Value Value;
-typedef struct {Value val; char *chaine;} Pair;
+typedef struct {Value val; char *string;} Pair;
 typedef struct strLink { Pair pair; struct strLink *next;} Link;
 typedef struct { Link *head; Link *tail; } PairList;
+typedef struct {PairList **pl; size_t size;} SymbolTable;
 
-int 		genIndex(const char *chaine, size_t strlen);
-Pair 		genPair(const char *chaine, Value val, size_t strlen);
-Link 		*genLink(Pair p);
-PairList 	*genPairList();
-void 		addPairList(PairList *pl, Link *l);
-void 		initHashTable(PairList **ht, size_t size);
-void 		addHashTable(PairList **ht, const char *chaine, int index, Value val, size_t strlen);
-Value 		findOnHashTable(PairList **ht, const char *chaine, size_t strlen, size_t size);
-int 		createOrReplaceOnHashTable(PairList **ht, const char *chaine, Value val, size_t strlen, size_t size);
-int 		straightStrCmp(const char *string1, const char *string2);
-void 		debugPrintHashTable(PairList **ht, size_t size);
-void 		freeAll(PairList **ht, size_t size);
+int 		_genIndex(const char *chaine);
+int 		_straightStrCmp(const char *string1, const char *string2);
+
+Pair 		P_gen(const char *chaine, Value val);
+
+Link 		*L_gen(Pair p);
+
+PairList 	*PL_gen();
+void 		PL_add(PairList *pl, Link *l);
+
+SymbolTable 	*ST_gen(size_t size);
+void 		ST_addNoLookup(SymbolTable *st, const char *string, int index, Value val);
+Value 		ST_lookup(SymbolTable *st, const char *string);
+int 		ST_add(SymbolTable *st, const char *string, Value val);
+void 		ST_print(SymbolTable *st);
+void 		ST_destroy(SymbolTable *st);
 
 /*
-size_t htSize;
-PairList **hashTable;
+SymbolTable *st;
 //TODO:
-//Use those for yacc
+//Use this for yacc
 */
 
 #endif
