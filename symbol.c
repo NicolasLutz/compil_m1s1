@@ -131,7 +131,7 @@ SymbolTable *ST_gen(size_t size)
 
 void ST_addNoLookup(SymbolTable *st, const char *name, int index, SymbolInfo info)
 //adds an entry and returns the set generated
-{
+""{
 	Symbol s=S_gen(name, info);
 	Link *l=L_gen(s);
 	SL_add(st->sl[index],l);
@@ -194,15 +194,15 @@ void ST_print(const SymbolTable *st)
 			switch(l->symbol.info.type)
 			{
 				case INT_T:
-					printf("%d    %15d  %s\n", 
+					printf("%d    %15d  %s\n",
 						i, l->symbol.info.value.iVal, l->symbol.name);
 					break;
 				case FLOAT_T:
-					printf("%d    %15f  %s\n", 
+					printf("%d    %15f  %s\n",
 						i, l->symbol.info.value.fVal, l->symbol.name);
 					break;
 				default:
-					printf("%d    %15p  %s\n", 
+					printf("%d    %15p  %s\n",
 						i, l->symbol.info.value.mVal, l->symbol.name);
 					break;
 			}
@@ -257,7 +257,7 @@ void ST_writeMIPS(const SymbolTable *st, const char *filename)
 	}
 	fclose(f);
 	return;
-	
+
 }
 
 //Usage examsle
@@ -271,7 +271,7 @@ int main()
 	const char *mStr="mon_pointeur";
 	const char *iStr="mon_int";
 	const char *fStr="mon_float";
-	ST_add(st, mStr, examplePntr); 
+	ST_add(st, mStr, examplePntr);
 	ST_add(st, iStr, exampleInt);
 	ST_add(st, fStr, exampleFloat);
 	exampleFloat.value.fVal=3.14f;
