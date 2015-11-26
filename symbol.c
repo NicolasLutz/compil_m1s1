@@ -131,7 +131,7 @@ SymbolTable *ST_gen(size_t size)
 
 void ST_addNoLookup(SymbolTable *st, const char *name, int index, SymbolInfo info)
 //adds an entry and returns the set generated
-""{
+{
 	Symbol s=S_gen(name, info);
 	Link *l=L_gen(s);
 	SL_add(st->sl[index],l);

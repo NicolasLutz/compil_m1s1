@@ -3,8 +3,16 @@
 
 #include "symbol.h"
 
+typedef enum Instruction
+{
+    GOTO_I, PLUS_I, MINUS_I, MULT_I, DIV_I, U_MINUS_I,
+    PRINT_I, PRINTF_I, PRINTMAT_I,
+    AFF_I
+} Instruction;
+
+
 typedef struct strQuad {
-	char op;
+    Instruction op;
 	Symbol* arg1;
 	Symbol* arg2;
 	Symbol* res;
@@ -19,8 +27,10 @@ typedef struct
 
 
 
-Quad* Q_gen(char op, Symbol* arg1, Symbol* arg2, Symbol* res);
-void QL_add (QuadList *ql, Quad* new);
+Quad *Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res);
+Quad *Q_concat(Quad *q1, Quad *q2);
+
+void QL_add (QuadList *ql, Quad* quad);
 void Q_print (QuadList *ql);
 
 

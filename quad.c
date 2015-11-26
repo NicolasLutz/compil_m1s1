@@ -3,29 +3,39 @@
 #include <string.h>
 #include "quad.h"
 
-Quad* Q_gen(char op, Symbol* arg1, Symbol* arg2, Symbol* res)
+Quad* Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res)
 {
-	Quad* new = malloc(sizeof(*new));
-	new->op = op;
-	new->arg1 = arg1;
-	new->arg2 = arg2;
-	new->res = res;
-	new->next = NULL;
+    Quad* q = malloc(sizeof(*new));
+    q->op = op;
+    q->arg1 = arg1;
+    q->arg2 = arg2;
+    q->res = res;
+    q->next = NULL;
 	return new;
 }
 
-void QL_add (QuadList *ql, Quad* new)
+Quad *Q_concat(Quad *q1, Quad *q2)
+{
+    assert(q1->next==NULL);
+    q1->next=q2;
+    return q1;
+}
+
+
+//================================================================================================
+
+void QL_add (QuadList *ql, Quad* quad)
 {
 	assert(ql!=NULL);
 	if(!ql->head)
 	{
-		ql->head=new;
-		ql->tail=new;
+        ql->head=quad;
+        ql->tail=quad;
 	}
 	else
 	{
-		ql->tail->next=new;
-		ql->tail=new;
+        ql->tail->next=quad;
+        ql->tail=quad;
 	}
 	return;
 }
@@ -45,3 +55,5 @@ void QL_print (QuadList *ql)
 	}
 	return;
 }
+
+//================================================================================================
