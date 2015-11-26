@@ -3,11 +3,12 @@
 
 #include "symbol.h"
 
+//possible instructions,
 typedef enum Instruction
 {
-    GOTO_I, PLUS_I, MINUS_I, MULT_I, DIV_I, U_MINUS_I,
-    PRINT_I, PRINTF_I, PRINTMAT_I,
-    AFF_I
+    AFF_I, PLUS_I, MINUS_I, MULT_I, DIV_I, U_MINUS_I,  //=, +, -, /, *, unary -
+    PRINT_I, PRINTF_I, PRINTMAT_I,                     //prints
+    GOTO_I, IF_GOTO_I                                  //goto, if->goto
 } Instruction;
 
 
@@ -27,11 +28,15 @@ typedef struct
 
 
 
-Quad *Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res);
-Quad *Q_concat(Quad *q1, Quad *q2);
+Quad        *Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res);
+Quad        *Q_genGoto();
+Quad        *Q_concat(Quad *q1, Quad *q2);
 
-void QL_add (QuadList *ql, Quad* quad);
-void Q_print (QuadList *ql);
+//================================================================================================
+
+QuadList    *QL_gen();
+void        QL_add (QuadList *ql, Quad* quad);
+void        QL_print (QuadList *ql);
 
 
 

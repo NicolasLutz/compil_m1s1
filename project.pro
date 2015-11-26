@@ -3,16 +3,16 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.c \
+SOURCES += \
     symbol.c \
     quad.c
 
 OTHER_FILES += \
-    matc.l \
     matc.y \
     Makefile
 
 HEADERS += \
     symbol.h \
-    quad.h
+    quad.h \
+    matc.l
 

@@ -1,17 +1,18 @@
 %{
 
+//Ne pas editer ce fichier sur qt (problemes d'espace, reconnaissance de syntaxe, etc)
 #include "global.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "y.tab.h"
-int lineno;
+int lineno=0; //<initialiser a 0
 
 %}
 
 blancs    [ \t]+
-commentaire "/*"([^]|("*"+[^/*]))*"*"+"/"
+commentaire "/*"([^*]*[*][^*/])*[^*]*[*]+"/" //<definition du prof
 
 chiffre   [0-9]
 entier    {chiffre}+
@@ -53,7 +54,7 @@ affectation "="
 \n  lineno++; 
 
 {blancs}   { /* On ignore */ }
-{commentaire} ;
+{commentaire} { /* On ignore */ }
 
 %%
 yywrap(){return 1;}

@@ -63,10 +63,10 @@ SymbolInfo SI_genArray(void *value)
 //=============================================================================
 //=============================================================================
 
-Symbol S_gen(const char *name, SymbolInfo info)
+Symbol S_gen(const char *name, SymbolInfo *info)
 {
 	Symbol s;
-	s.info=info;
+    s.info=*info;
 	s.name=strndup(name, maxStrLength);
 	return s;
 }
@@ -74,10 +74,10 @@ Symbol S_gen(const char *name, SymbolInfo info)
 //=============================================================================
 //=============================================================================
 
-Link *L_gen(Symbol s)
+Link *L_gen(Symbol *s)
 {
 	Link *l=(Link *)malloc(sizeof(*l));
-	l->symbol=s;
+    l->symbol=*s;
 	l->next=NULL;
 	return l;
 }
@@ -129,14 +129,6 @@ SymbolTable *ST_gen(size_t size)
 
 //=============================================================================
 
-void ST_addNoLookup(SymbolTable *st, const char *name, int index, SymbolInfo info)
-//adds an entry and returns the set generated
-{
-	Symbol s=S_gen(name, info);
-	Link *l=L_gen(s);
-	SL_add(st->sl[index],l);
-}
-
 SymbolInfo ST_lookup(SymbolTable *st, const char *name)
 //find the entry corresponding to name.
 //make sure ht was initialized before
@@ -158,7 +150,7 @@ SymbolInfo ST_lookup(SymbolTable *st, const char *name)
 	return info;
 }
 
-int ST_add(SymbolTable *st, const char *name, SymbolInfo info)
+int ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 //creates or reslace an entry in st with name name and informations info.
 //make sure ht was initialized before.
 //returns 1 if the entry existed, and 0 if it was created.
@@ -170,18 +162,28 @@ int ST_add(SymbolTable *st, const char *name, SymbolInfo info)
 	{
 		if(_straightStrCmp(name, l->symbol.name))
 		{
-			l->symbol.info=info;
+            l->symbol.info=*info;
 			found=1;
 		}
 		else
 			l=l->next;
 	}
 	if(!found)
-		ST_addNoLookup(st, name, index, info);
+    {
+        Symbol s=S_gen(name, info);
+        SL_add(st->sl[index],L_gen(&s));
+    }
 	return found;
 }
 
-void ST_print(const SymbolTable *st)
+int ST_addTmp(SymbolTable *st, SymbolInfo *info)
+{
+    static unsigned int count=0;
+    sprintf(st->_tmpName,"__tmp_%d",count++);
+    return ST_add(st,st->_tmpName,info);
+}
+
+void ST_print(const SymbolTable *st) //debug purposes only
 {
 	unsigned int i;
 	printf("Index==Value=======String\n");
@@ -218,7 +220,7 @@ void ST_destroy(SymbolTable *st)
 	Link *l;
 	for(i=0; i<st->size; i++)
 	{
-		while(l=st->sl[i]->head)
+        while((l=st->sl[i]->head))
 		{
 			st->sl[i]->head=l->next;
 			free(l->symbol.name);
@@ -260,24 +262,28 @@ void ST_writeMIPS(const SymbolTable *st, const char *filename)
 
 }
 
-//Usage examsle
+//Usage example
+
 int main()
 {
 	size_t stSize=128;
 	SymbolTable *st=ST_gen(stSize);
-	SymbolInfo examplePntr=SI_genArray(&stSize); //m stands for matrix
+    SymbolInfo examplePntr=SI_genArray(&stSize);
 	SymbolInfo exampleInt=SI_genInt(stSize);
 	SymbolInfo exampleFloat=SI_genFloat(3.13f);
-	const char *mStr="mon_pointeur";
+    const char *mStr="mon_pointeur"; //m stands for matrix
 	const char *iStr="mon_int";
 	const char *fStr="mon_float";
-	ST_add(st, mStr, examplePntr);
-	ST_add(st, iStr, exampleInt);
-	ST_add(st, fStr, exampleFloat);
+    ST_add(st, mStr, &examplePntr);
+    ST_add(st, iStr, &exampleInt);
+    ST_add(st, fStr, &exampleFloat);
 	exampleFloat.value.fVal=3.14f;
-	ST_add(st, fStr, exampleFloat);
+    ST_add(st, fStr, &exampleFloat);
+    exampleFloat.value.fVal=7.08f;
+    ST_addTmp(st, &exampleFloat);
 	ST_print(st);
 	ST_writeMIPS(st, "test.s");
 	ST_destroy(st);
 	return 0;
 }
+
