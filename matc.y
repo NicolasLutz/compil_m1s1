@@ -93,18 +93,3 @@ yyerror(char *message){
 	extern char* yytext;
 	fprintf(stder, "%d" ; %s at %s\n", lineno, message, yytext);
 }
-
-scoped_var_declaration : TYPE var_decl_list;
-
-
-var_decl_list : var_decl_list ',' var_decl_id | var_decl_id
-			  ;
-var_decl_id : IDENTIFIER | IDENTIFIER '['YNUM']'
-            ;
-
-
-
-param_id_list : param_id_list ',' param_id | param_id
-			 ;
-param_id : IDENTIFIER | IDENTIFIER '[' ']'
-         ;
