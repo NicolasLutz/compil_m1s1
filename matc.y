@@ -30,80 +30,55 @@
 %start program
 
 %%
-program : /*empty*/
-	program declaration_list
-	;
-declaration_list : declaration_list 
-                 | declaration
-                 ;
-declaration : var_declaration | fn_declaration
-			;
+program : declaration_list ;
+declaration_list : declaration_list declaration | declaration ;
+declaration : var_declaration | fn_declaration;
 
-var_declaration : TYPE var_decl_list ';'
-                ;
-scoped_var_declaration : TYPE var_decl_list';
+var_declaration : type YIDENTIFIER ';'| type YIDENTIFIER '['YNUM']' ';'                ;
+type : YINT|YFLOAT|YMATRIX;
 
-var_decl_list : var_decl_list ',' var_decl_id | var_decl_id
-			  ;
-var_decl_id : IDENTIFIER | IDENTIFIER '['YNUM']'
-            ;
+fn_declaration	: type ID '('params ')' statement | ID '('params')' statement  ;
+params : |param_list ;
+param_list: param_list ',' param | param ;
+param: type YIDENTIFIER ;
 
-TYPE : INT|FLOAT
-	;
+compound_stmt : | '{'local_declaration statement_list'}';
+statement_list :  |statement_list statement ;
 
-fn_declaration	: TYPE ID '('
-	         params ')' statement
-        |ID (params) statement
-	    ;
-params : 
-	|param_list
-	;
-param_list: param_list ';' param_type_list | param_type_list
-          ;
-param_type_list: TYPE param_id_list
-				;
-param_id_list : param_id_list ',' param_id | param_id
-			 ;
-param_id : IDENTIFIER | IDENTIFIER '[' ']'
-         ;
-
-statement :	expression_stmt 
+statement :   expression_stmt 
 	      | compound_stmt
 	      | selection_stmt
 	      | iteration_stmt
 	      | return_stmt
 	      ;
-compound_stmt : '{'statement_list'}'
-		      ;
-statement_list : 
-               |statement_list statement
-               ;
 expression_stmt : expression ';' | ';'
-				;
-selection_stmt : YIF '('simple_expr')' statement
-			   | YIF '('simple_expr')' statement YELSE statement
-			   ;
-iteration_stmt : YWHILE '(' simple_expr ')' statement      
-				| YFOR '(' simple_expr';'simple_expr';'simple_expr ')'
+			
+selection_stmt : YIF '('expression')' statement
+               | YIF '('expression')' statement YELSE statement ;
+iteration_stmt : YWHILE '(' expression ')' statement      
+		| YFOR '(' expression';'expression';'expression ')'
                 ;
 return_stmt : YRETURN';'
-            | YRETURN expr';'
+            | YRETURN simple_expression';'
             ;
-expr : IDENTIFIER
+expression : var ASSIGN simple_expression | simple_expression ;
+var : YIDENTIFIER | YIDENTIFIER'['expresion']';
+
+simple_expression : YIDENTIFIER
      | YNUM
-     | '(' expr')'
-     | IDENTIFIER ASSIGN expr
-     | '-' expr %prec NEG
-     | expr '-' expr
-     | expr '+' expr
-     | expr '*' expr
-     | expr YNEQ expr
-     | expr '/' expr
+     | '(' simple_expression')'
+     | 
+     | '-' simple_expression %prec NEG
+     | simple_expression '-' simple_expression
+     | simple_expression '+' simple_expression
+     | simple_expression '*' simple_expression
+     | simple_expression YNEQ simple_expression
+     | simple_expression '/' simple_expression
      | IDENTIFIER '(' expr_list ')'
      ;
  expr_list : 
-           | expr
-           | expr ',' expr_list
+           | simple_expression
+           | simple_expression ',' expr_list
            ;
 %%
 int main(){
@@ -119,3 +94,17 @@ yyerror(char *message){
 	fprintf(stder, "%d" ; %s at %s\n", lineno, message, yytext);
 }
 
+scoped_var_declaration : TYPE var_decl_list;
+
+
+var_decl_list : var_decl_list ',' var_decl_id | var_decl_id
+			  ;
+var_decl_id : IDENTIFIER | IDENTIFIER '['YNUM']'
+            ;
+
+
+
+param_id_list : param_id_list ',' param_id | param_id
+			 ;
+param_id : IDENTIFIER | IDENTIFIER '[' ']'
+         ;
