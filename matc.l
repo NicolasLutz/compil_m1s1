@@ -44,7 +44,7 @@ affectation "="
 "return"   return(YRETURN);
 
 {identificateur} {yylval= *yytext;
-		         return IDENTIFIER; }
+		         return YIDENTIFIER; }
 {affectation}    return ASSIGN;
 {separateur}     return SEPARATOR;
 
