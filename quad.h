@@ -37,7 +37,7 @@ Quad        *Q_concat(Quad *q1, Quad *q2);
 QuadList    *QL_gen();
 void        QL_add (QuadList *ql, Quad* quad);
 void        QL_print (QuadList *ql);
-
+void        QL_writeMIPS(QuadList *ql, const char *filename);
 
 
 /*

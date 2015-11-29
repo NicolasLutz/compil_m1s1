@@ -74,9 +74,9 @@ SymbolList 	    *SL_gen();
 void 		    SL_add(SymbolList *sl, Link *l);
 
 SymbolTable 	*ST_gen(size_t size);
-int 		    ST_add(SymbolTable *st, const char *name, SymbolInfo *info);
-int 		    ST_addTmp(SymbolTable *st, SymbolInfo *info);
-SymbolInfo 	    ST_lookup(SymbolTable *st, const char *name);
+Symbol 		    *ST_add(SymbolTable *st, const char *name, SymbolInfo *info);
+Symbol 		    *ST_addTmp(SymbolTable *st, SymbolInfo *info);
+Symbol 	    *ST_lookup(SymbolTable *st, const char *name);
 void 		    ST_print(const SymbolTable *st);
 void		    ST_writeMIPS(const SymbolTable *st, const char *filename);
 void 		    ST_destroy(SymbolTable *st);

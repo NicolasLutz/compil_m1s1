@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "quad.h"
+#include "symbol.h"
 
 Quad* Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res)
 {
@@ -29,6 +30,38 @@ Quad *Q_concat(Quad *q1, Quad *q2)
     assert(q1->next==NULL);
     q1->next=q2;
     return q1;
+}
+
+Quad *Q_writeMIPS(Quad *q, FILE *f)
+{
+  assert(f!=NULL && q!=NULL);
+  switch (q->op)
+  {
+    case AFF_I:
+      break;
+    case PLUS_I:
+      break;
+    case MINUS_I:
+      break;
+    case MULT_I:
+      break;
+    case DIV_I:
+      break;
+    case U_MINUS_I:
+      break;
+    case PRINT_I:
+      break;
+    case PRINTF_I:
+      break;
+    case PRINTMAT_I:
+      break;
+    case GOTO_I:
+      break;
+    case IF_GOTO_I:
+      break;
+    default:
+      break;
+  }
 }
 
 //================================================================================================
@@ -73,13 +106,51 @@ void QL_print (QuadList *ql)
 	return;
 }
 
+void QL_writeMIPS(QuadList *ql, const char *filename)
+{
+  assert(ql!=NULL);
+  FILE *f=fopen(filename, "a");
+  Quad *q=ql->head;
+  while(q!=NULL)
+  {
+    Q_writeMIPS(q, f);
+    q=q->next;
+  }
+}
+
 //================================================================================================
 
 //Usage example
-/*
 int main()
 {
-    QuadList *ql=QL_gen();
-    return 0;
+  size_t stSize=128;
+  SymbolTable *st=ST_gen(stSize);
+  SymbolInfo examplePntr=SI_genArray(&stSize);
+  SymbolInfo exampleInt=SI_genInt(stSize);
+  SymbolInfo exampleFloat=SI_genFloat(3.13f);
+  const char *mStr="mon_pointeur"; //m stands for matrix
+  const char *iStr="mon_int";
+  const char *fStr="mon_float";
+  ST_add(st, mStr, &examplePntr);
+  ST_add(st, iStr, &exampleInt);
+  ST_add(st, fStr, &exampleFloat);
+
+  exampleFloat.value.fVal=3.14f;
+  ST_add(st, fStr, &exampleFloat);
+
+  exampleFloat.value.fVal=7.08f;
+  ST_addTmp(st, &exampleFloat);
+
+  exampleInt.value.iVal=1;
+  ST_addTmp(st, &exampleInt);
+
+  ST_print(st);
+  ST_writeMIPS(st, "test.s");
+
+  //quads
+  Quad *q1=Q_gen(AFF_I, ST_lookup(st, "__tmp_0"), NULL, ST_lookup(st, iStr));
+  Quad *q2=Q_gen(ADD_I, ST_lookup(st, iStr), ST_lookup(st, "__tmp_1"), ST_lookup(st, iStr));
+
+  ST_destroy(st);
+  return 0;
 }
-*/
