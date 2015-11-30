@@ -1,8 +1,16 @@
+CC=gcc
+CFLAGS=-W -Wall
+LYFLAGS=-ly -lfl -lm
+SRC=$(wildcard *.c)
+OBJ=$(SRC:.c=.o)
 
-all: exe clean run
+all: yacc lex main clean run
 
-exe: yacc lex
-	gcc -o exe *.c -ly -lfl -lm
+main: $(OBJ)
+	@$(CC) -o $@ $^ lex.yy.c y.tab.c $(CFLAGS) $(LYFLAGS)
+
+%.o: %.c
+	@$(CC) -o $@ -c $< $(CFLAGS)
 
 yacc: *.y
 	yacc -d *.y
@@ -14,7 +22,7 @@ mrproper: clean
 	@rm analyseur
 
 clean:
-	@rm lex.* y.*
+	@rm lex.* y.* *.o
 
 run:
-	./exe 
+	./main

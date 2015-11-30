@@ -27,9 +27,9 @@ affectation "="
 %%
 
 [+-/()\[\]{}^;~,] {return(yytext[0]);}
-!=         {return(YNEQ);} 
-"++"       {return(PLUSPLUS);} 
-"--"       {return(MINUSMINUS);} 
+!=         {return(YNEQ);}
+"++"       {return(PLUSPLUS);}
+"--"       {return(MINUSMINUS);}
 
 "int"      return(YINT);
 "float"    return(YFLOAT);
@@ -51,11 +51,10 @@ affectation "="
 {reel}     { yylval=atof(yytext);
       	   return(YNUM);}
 
-\n  lineno++; 
+\n  lineno++;
 
 {blancs}   { /* On ignore */ }
 {commentaire} { /* On ignore */ }
 
 %%
 yywrap(){return 1;}
-

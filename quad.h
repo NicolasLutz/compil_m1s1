@@ -6,9 +6,10 @@
 //possible instructions,
 typedef enum Instruction
 {
-    AFF_I, PLUS_I, MINUS_I, MULT_I, DIV_I, U_MINUS_I,  //=, +, -, /, *, unary -
+    AFF_I, ADD_I, SUB_I, MULT_I, DIV_I, NEG_I,  //=, +, -, /, *, unary -
     PRINT_I, PRINTF_I, PRINTMAT_I,                     //prints
-    GOTO_I, IF_GOTO_I                                  //goto, if->goto
+    GOTO_I, IF_GOTO_I,                                  //goto, if->goto
+    B_GEQ_I, B_LEQ_I, B_L_I, B_G_I, B_EQ_I, B_NEQ_I    //booleans (G=greater, L=lower, EQ=equal)
 } Instruction;
 
 
@@ -26,18 +27,19 @@ typedef struct
 	Quad *tail;
 } QuadList;
 
-
-
 Quad        *Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res);
 Quad        *Q_genGoto();
 Quad        *Q_concat(Quad *q1, Quad *q2);
+void        Q_writeMIPS(const Quad *q, FILE *f);
+void        Q_free(Quad *q); //TODO
 
 //================================================================================================
 
 QuadList    *QL_gen();
 void        QL_add (QuadList *ql, Quad* quad);
-void        QL_print (QuadList *ql);
+void        QL_print (const QuadList *ql);
 void        QL_writeMIPS(QuadList *ql, const char *filename);
+void        QL_free(QuadList *ql); //TODO
 
 
 /*
