@@ -11,6 +11,9 @@ int lineno=0; //<initialiser a 0
 
 %}
 
+%option nounput
+%option noinput
+
 blancs    [ \t]+
 commentaire "/*"([^*]*[*][^*/])*[^*]*[*]+"/" //<definition du prof
 
@@ -57,4 +60,14 @@ affectation "="
 {commentaire} { /* On ignore */ }
 
 %%
-yywrap(){return 1;}
+yywrap()
+{
+	return 1;
+}
+
+void lex_free()
+{
+  yy_delete_buffer(YY_CURRENT_BUFFER);
+  free(yy_buffer_stack);
+  return;
+}
