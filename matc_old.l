@@ -28,7 +28,6 @@ reel    {entier}("."{entier})?{exposant}?
 affectation "="
 
 %%
-
 [+-/()\[\]{}^;~,] {return(yytext[0]);}
 !=         {return(YNEQ);}
 "++"       {return(PLUSPLUS);}
