@@ -19,7 +19,6 @@
 %nonassoc 	IF
 %nonassoc	ELSE
 
-
 %right ASSIGN 
 %nonassoc YNEQ 
 %left  '+' '-'
