@@ -4,6 +4,10 @@
 #include "quad.h"
 #include "symbol.h"
 
+const char *_g_instrDesc[17]={"Affectation", "Addition", "Substraction", "Multiplication",
+              "Division", "Negation", "Print", "Printf", "Printmat",
+              "Goto", "If()Goto", "Geq", "Leq", "Lower", "Greater", "Equal", "Not equal"};
+
 Quad* Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res)
 {
   Quad* q = malloc(sizeof(*q));
@@ -76,6 +80,12 @@ void Q_writeMIPS(const Quad *q, FILE *f)
   }
 }
 
+void Q_free(Quad *q)
+{
+  free(q);
+  return;
+}
+
 //================================================================================================
 
 QuadList *QL_gen()
@@ -102,14 +112,39 @@ void QL_add (QuadList *ql, Quad* quad)
   return;
 }
 
+int QL_empty(QuadList *ql)
+{
+  assert(ql!=NULL);
+  return (ql->head==NULL);
+}
+
+QuadList *QL_concat(QuadList *ql1, QuadList* ql2)
+{
+  assert(ql1!=NULL);
+  if(ql2==NULL || QL_empty(ql2))
+    return ql1;
+  if(ql1->tail==NULL)
+  {
+    ql1->tail=ql2->tail;
+    ql1->head=ql2->head;
+  }
+  else
+  {
+    ql1->tail->next=ql2->head;
+    ql1->tail=ql2->tail;
+  }
+  free(ql2);
+  return ql1;
+}
+
 void QL_print (const QuadList *ql)
 {
   assert(ql!=NULL);
   Quad *q=ql->head;
   while(q!=NULL)
   {
-    printf("%c %7s %7s %7s\n",
-    q->op,
+    printf("%s %7s %7s %7s\n",
+    InstructionDesc(q->op),
     (q->arg1 ? q->arg1->name : "None"),
     (q->arg2 ? q->arg2->name : "None"),
     (q->res  ? q->res->name  : "None"));
@@ -130,6 +165,20 @@ void QL_writeMIPS(QuadList *ql, const char *filename)
   }
   return;
 }
+
+void QL_free(QuadList *ql)
+{
+  assert(ql!=NULL);
+  Quad *q;
+  while((q=ql->head)!=NULL)
+  {
+    ql->head=q->next;
+    Q_free(q);
+  }
+  free(ql);
+  return;
+}
+
 
 //================================================================================================
 

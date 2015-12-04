@@ -71,20 +71,14 @@ Symbol 		    S_gen(const char *name, SymbolInfo *info);
 Link 		    *L_gen(Symbol *s);
 
 SymbolList 	    *SL_gen();
-void 		    SL_add(SymbolList *sl, Link *l);
+void 		     SL_add(SymbolList *sl, Link *l);
 
 SymbolTable 	*ST_gen(size_t size);
 Symbol 		    *ST_add(SymbolTable *st, const char *name, SymbolInfo *info);
 Symbol 		    *ST_addTmp(SymbolTable *st, SymbolInfo *info);
-Symbol 	    *ST_lookup(SymbolTable *st, const char *name);
-void 		    ST_print(const SymbolTable *st);
-void		    ST_writeMIPS(const SymbolTable *st, const char *filename);
-void 		    ST_destroy(SymbolTable *st);
-
-/*
-SymbolTable *st;
-//TODO:
-//Use this for yacc
-*/
+Symbol 	      *ST_lookup(SymbolTable *st, const char *name);
+void 		       ST_print(const SymbolTable *st);
+void		       ST_writeMIPS(const SymbolTable *st, const char *filename);
+void 		       ST_destroy(SymbolTable *st);
 
 #endif

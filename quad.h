@@ -3,14 +3,23 @@
 
 #include "symbol.h"
 
-//possible instructions,
+#define P_DEBUG
+
+//possible instructions
 typedef enum Instruction
 {
-    AFF_I, ADD_I, SUB_I, MULT_I, DIV_I, NEG_I,  //=, +, -, /, *, unary -
-    PRINT_I, PRINTF_I, PRINTMAT_I,                     //prints
-    GOTO_I, IF_GOTO_I,                                  //goto, if->goto
-    B_GEQ_I, B_LEQ_I, B_L_I, B_G_I, B_EQ_I, B_NEQ_I    //booleans (G=greater, L=lower, EQ=equal)
+    AFF_I=0, ADD_I=1, SUB_I=2, MULT_I=3, DIV_I=4, NEG_I=5,  //=, +, -, /, *, unary -
+    PRINT_I=6, PRINTF_I=7, PRINTMAT_I=8,                     //prints
+    GOTO_I=9, IF_GOTO_I=10,                                  //goto, if->goto
+    B_GEQ_I=11, B_LEQ_I=12, B_L_I=13, B_G_I=14, B_EQ_I=15, B_NEQ_I=16    //booleans (G=greater, L=lower, EQ=equal)
 } Instruction;
+
+#ifdef P_DEBUG
+extern const char *_g_instrDesc[17];
+#define InstructionDesc(i) (_g_instrDesc[(int)(i)])
+#else
+#define InstructionDesc(i) (NULL)
+#endif
 
 
 typedef struct strQuad {
@@ -37,6 +46,7 @@ void        Q_free(Quad *q); //TODO
 
 QuadList    *QL_gen();
 void        QL_add (QuadList *ql, Quad* quad);
+QuadList    *QL_concat (QuadList *ql1, QuadList* ql2);
 void        QL_print (const QuadList *ql);
 void        QL_writeMIPS(QuadList *ql, const char *filename);
 void        QL_free(QuadList *ql); //TODO

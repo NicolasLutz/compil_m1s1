@@ -66,9 +66,9 @@
 
 	Symbol S_gen(const char *name, SymbolInfo *info)
 	{
-		assert(name!=NULL && info!=NULL);
+		assert(name!=NULL);
 		Symbol s;
-	    s.info=*info;
+		s.info=(info!=NULL ? *info : SI_genInt(0));
 		s.name=strndup(name, maxStrLength);
 		return s;
 	}
@@ -158,7 +158,7 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 	//creates or reslace an entry in st with name name and informations info.
 	//returns the symbol.
 	{
-		assert(st!=NULL && name!=NULL && info!=NULL);
+		assert(st!=NULL && name!=NULL);
 		int index=_genIndex(name)%st->size;
 		Symbol s;
 		Link *l=st->sl[index]->head;
@@ -167,7 +167,7 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 		{
 			if(_straightStrCmp(name, l->symbol.name))
 			{
-				l->symbol.info=*info;
+				l->symbol.info=(info!=NULL ? *info : SI_genInt(0));
 				found=1;
 			}
 			else
