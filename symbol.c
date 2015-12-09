@@ -89,7 +89,7 @@
 
 	SymbolList *SL_gen()
 	{
-		SymbolList *sl=malloc(sizeof(*sl));
+		SymbolList *sl=(SymbolList *)malloc(sizeof(*sl));
 		sl->head=NULL;
 		sl->tail=NULL;
 		return sl;
@@ -121,17 +121,17 @@
 	{
 		assert(size>0);
 		unsigned int i;
-		SymbolTable *st=malloc(sizeof(*st));
-		st->sl=malloc(size*sizeof(*st->sl));
+		SymbolTable *st=(SymbolTable *)malloc(sizeof(*st));
+		st->sl=(SymbolList **)malloc(size*sizeof(*st->sl));
 		st->size=size;
 		for(i=0; i<size; i++)
 		{
 			st->sl[i]=SL_gen();
 		}
-		SymbolInfo *siZero	=SI_genInt(0);
-		SymbolInfo *siOne 	=SI_genInt(1);
-		ST_add(st, siZero, "__zero");
-		ST_add(st, siZero, "__one");
+		SymbolInfo siZero	=SI_genInt(0);
+		SymbolInfo siOne 	=SI_genInt(1);
+		ST_add(st, "__zero", &siZero);
+		ST_add(st, "__one", &siOne);
 		return st;
 	}
 
@@ -206,15 +206,15 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 				switch(l->symbol.info.type)
 				{
 					case INT_T:
-						printf("%d    %15d  %s\n",
+						printf("%3d    %12d  %s\n",
 							i, l->symbol.info.value.iVal, l->symbol.name);
 						break;
 					case FLOAT_T:
-						printf("%d    %15f  %s\n",
+						printf("%3d    %12f  %s\n",
 							i, l->symbol.info.value.fVal, l->symbol.name);
 						break;
 					default:
-						printf("%d    %15p  %s\n",
+						printf("%3d    %12p  %s\n",
 							i, l->symbol.info.value.mVal, l->symbol.name);
 						break;
 				}
