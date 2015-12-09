@@ -6,7 +6,7 @@
 
 const char *_g_instrDesc[17]={"Affectation", "Addition", "Substraction", "Multiplication",
               "Division", "Negation", "Print", "Printf", "Printmat",
-              "Goto", "Label", "Geq", "Leq", "Lower", "Greater", "Equal", "Not equal"};
+              "Label", "Goto", "Geq", "Leq", "Lower", "Greater", "Equal", "Not equal"};
 
 Quad Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res)
 {
@@ -19,24 +19,26 @@ Quad Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res)
   return q;
 }
 
-Quad *Q_genGoto()
+Quad Q_genGoto()
 {
-  Quad* q = (Quad *)malloc(sizeof(*q));
-  q->op       = GOTO_I;
-  q->arg1     = NULL;
-  q->arg2     = NULL;
-  q->res      = NULL;
+  Quad q;
+  q.op       = GOTO_I;
+  q.arg1     = NULL;
+  q.arg2     = NULL;
+  q.res      = NULL;
+  q.next     = NULL;
   return q;
 }
 
-Quad *Q_genLabel()
+Quad Q_genLabel()
 {
-  static unsigned int labelNum=0;
-  Quad *q = (Quad *)malloc(sizeof(*q));
-  q->op       = LABEL_I;
-  q->arg1     = NULL;
-  q->arg2     = NULL;
-  q->res      = (Symbol *)labelNum++; //look away
+  static unsigned int labelNum=1;
+  Quad q;
+  q.op       = LABEL_I;
+  q.arg1     = NULL;
+  q.arg2     = NULL;
+  q.res      = (Symbol *)labelNum++; //look away
+  q.next     = NULL;
   return q;
 }
 
@@ -49,8 +51,7 @@ Quad *Q_concat(Quad *q1, Quad *q2)
 
 void Q_backpatch(Quad *q, Symbol *label)
 {
-    if(q->op==GOTO_I)
-      q->res=label; //they'll never know
+  q->res=label; //they'll never know
 }
 
 void Q_writeMIPS(const Quad *q, FILE *f)
@@ -97,6 +98,35 @@ void Q_writeMIPS(const Quad *q, FILE *f)
   }
 }
 
+void Q_print(const Quad *q)
+{
+  if(q->op>9)
+  {
+    printf("%12s %12s %12s %12s%d\n",
+      InstructionDesc(q->op),
+      (q->arg1 ? q->arg1->name : ""),
+      (q->arg2 ? q->arg2->name : ""),
+      (q->res ? "Label " : "GOTO_EMPTY"),
+      (unsigned int)q->res
+    );
+  }
+  else
+    switch(q->op)
+    {
+      case LABEL_I:
+        printf("Label %d:\n", (unsigned int)q->res);
+        break;
+      default:
+        printf("%12s %12s %12s %12s\n",
+          InstructionDesc(q->op),
+          (q->arg1 ? q->arg1->name : ""),
+          (q->arg2 ? q->arg2->name : ""),
+          (q->res  ? q->res->name  : "")
+        );
+        break;
+      }
+}
+
 void Q_free(Quad *q)
 {
   free(q);
@@ -137,7 +167,8 @@ int QL_empty(QuadList *ql)
 
 QuadList *QL_concat(QuadList *ql1, QuadList* ql2)
 {
-  assert(ql1!=NULL);
+  if(ql1==NULL)
+    return ql2;
   if(ql2==NULL || QL_empty(ql2))
     return ql1;
   if(ql1->tail==NULL)
@@ -150,18 +181,18 @@ QuadList *QL_concat(QuadList *ql1, QuadList* ql2)
     ql1->tail->next=ql2->head;
     ql1->tail=ql2->tail;
   }
-  free(ql2);
+  free(ql2); //TODO
   return ql1;
 }
 
-void QL_backpatch(QuadList *ql, Symbol *label)
+void QL_backpatch(QuadList *ql, Quad *labelQuad)
 {
     if(ql==NULL)
       return;
     Quad *q=ql->head;
     while(q!=NULL)
     {
-      Q_backpatch(q, label);
+      Q_backpatch(q, labelQuad->res);
       q=q->next;
     }
 }
@@ -169,25 +200,11 @@ void QL_backpatch(QuadList *ql, Symbol *label)
 void QL_print (const QuadList *ql)
 {
   assert(ql!=NULL);
-  static int labelNum=0; //lalalalala I can't hear you
   Quad *q=ql->head;
   while(q!=NULL)
   {
-    switch(q->op)
-    {
-      case LABEL_I:
-        printf("L%d:\n", labelNum++);
-        break;
-      default:
-        printf("%s %7s %7s %7s\n",
-        InstructionDesc(q->op),
-        (q->arg1 ? q->arg1->name : "None"),
-        (q->arg2 ? q->arg2->name : "None"),
-        (q->res  ? q->res->name  : "None"));
-        q=q->next;
-        break;
-    }
-
+    Q_print(q);
+    q=q->next;
   }
   return;
 }
@@ -207,6 +224,7 @@ QuadTab *QT_gen(size_t size)
   assert(size>0);
   QuadTab *qt=(QuadTab *)malloc(sizeof(*qt));
   qt->tab=(Quad *)malloc(size*sizeof(*qt->tab));
+  qt->size=size;
   qt->index=0;
   qt->next=NULL;
   return qt;
@@ -235,7 +253,7 @@ Quad *QT_add(QuadTab *qt, Quad *quad)
   return res;
 }
 
-Quad *QT_get(QuadTab *qt, unsigned int index)
+Quad *QT_get(const QuadTab *qt, unsigned int index)
 {
   assert(qt!=NULL);
   while(qt->size<=index)
@@ -244,6 +262,26 @@ Quad *QT_get(QuadTab *qt, unsigned int index)
     qt=qt->next;
   }
   return &qt->tab[index];
+}
+
+void QT_print(const QuadTab *qt)
+{
+  assert(qt!=NULL);
+  printf("%12s=%12s=%12s=%12s\n",
+    " Instruction",
+    "==Argument 1",
+    "==Argument 2",
+    "Return/Label");
+  unsigned int headIndex=0;
+  while(headIndex!=qt->index)
+  {
+    Q_print(&qt->tab[headIndex++]);
+    if(headIndex>=qt->size)
+    {
+      qt=qt->next;
+      headIndex=0;
+    }
+  }
 }
 
 //Usage example
