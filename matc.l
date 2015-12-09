@@ -21,19 +21,19 @@ commentaire "/*"([^*]*[*][^*/])*[^*]*[*]+"/"
 chiffre   [0-9]
 entier    {chiffre}+
 exposant  [eE][+-]?{entier}
-lettre [a-zA-Z]
+lettre 		[a-zA-Z_]
 identificateur {lettre}({lettre}|{chiffre})*
 
 reel    {entier}("."{entier})?{exposant}?
 
 %%
 
-[+-/()\[\]{}^~,;] {return(yytext[0]);}
+[+-/()\[\]\{\}^~,;\>\<] {return(yytext[0]);}
 
 "=="       {return(YEQUAL);}
 "!="       {return(YNEQ);}
-"&&"	   {return(YAND);}
-"||"	   {return(YOR);}
+"&&"	   	 {return(YAND);}
+"||"	   	 {return(YOR);}
 "!"	       {return(YNOT);}
 "="        return(YASSIGN);
 "while"    return(YWHILE);
@@ -45,10 +45,10 @@ reel    {entier}("."{entier})?{exposant}?
 "int"      return(YINT);
 "float"    return(YFLOAT);
 
-{identificateur} {yylval.string=strdup(yytext);
+{identificateur} {yylval.stringVal=strdup(yytext);
 		         return YID; }
 
-{reel}     { yylval.value=atoi(yytext);
+{reel}     { yylval.intVal=atoi(yytext);
       	   return(YNUM);}
 
 \n    return(yytext[0]);
