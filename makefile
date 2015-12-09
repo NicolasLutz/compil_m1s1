@@ -1,10 +1,15 @@
 CC=gcc
-CFLAGS=-W -Wall
+CFLAGS=-g -W -Wall
 LYFLAGS=-ly -lfl -lm
 SRC=$(wildcard *.c)
 OBJ=$(SRC:.c=.o)
 
-all: yacc lex main clean run
+all: yacc lex main remove_obj_only run
+
+all_noclean: yacc lex main run
+
+remove_obj_only:
+	@rm lex.* y.* *.o
 
 main: $(OBJ)
 	@$(CC) -o $@ $^ lex.yy.c y.tab.c $(CFLAGS) $(LYFLAGS)
@@ -13,16 +18,16 @@ main: $(OBJ)
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
 yacc: *.y
-	yacc -d *.y
+	yacc -d --verbose matc.y
 
 lex: *.l
-	flex *.l
+	flex matc.l
 
 mrproper: clean
 	@rm analyseur
 
-clean:
-	@rm lex.* y.* *.o
+clean: remove_obj_only
+	rm main
 
 run:
 	./main

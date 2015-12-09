@@ -5,13 +5,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "quad.h"
 #include "y.tab.h"
+
 int lineno=0; //<initialiser a 0
 
 %}
 
-%option nounput 
-%option noinput 
+%option nounput
+%option noinput
 
 blancs    [ \t]+
 commentaire "/*"([^*]*[*][^*/])*[^*]*[*]+"/"

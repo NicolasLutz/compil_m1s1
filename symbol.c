@@ -128,6 +128,10 @@
 		{
 			st->sl[i]=SL_gen();
 		}
+		SymbolInfo *siZero	=SI_genInt(0);
+		SymbolInfo *siOne 	=SI_genInt(1);
+		ST_add(st, siZero, "__zero");
+		ST_add(st, siZero, "__one");
 		return st;
 	}
 
