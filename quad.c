@@ -61,40 +61,85 @@ void Q_writeMIPS(const Quad *q, FILE *f)
   switch (q->op)
   {
     case AFF_I:
-    break;
+      fprintf(f, "lw $t0, %s\nsw $t0, %s\n",
+        q->arg1->name, q->res->name);
+      break;
     case ADD_I:
-    break;
+      fprintf(f, "lw $t1, %s\nlw $t2, %s\nadd $t0, $t1, $t2\nsw $t0, %s\n",
+        q->arg1->name, q->arg2->name, q->res->name);
+      break;
     case SUB_I:
-    break;
+      fprintf(f, "lw $t1, %s\nlw $t2, %s\nsub $t0, $t1, $t2\nsw $t0, %s\n",
+        q->arg1->name, q->arg2->name, q->res->name);
+      break;
     case MULT_I:
-    break;
+      fprintf(f, "lw $t1, %s\nlw $t2, %s\nmult $t1, $t2\nsw $LO, %s\n",
+        q->arg1->name, q->arg2->name, q->res->name);
+      break;
     case DIV_I:
-    break;
+      fprintf(f, "lw $t1, %s\nlw $t2, %s\ndiv $t1, $t2\nsw $LO, %s\n",
+        q->arg1->name, q->arg2->name, q->res->name);
+      break;
     case NEG_I:
-    break;
+      fprintf(f, "lw $t1, %s\nneg $t0, $t1\nsw $t0, %s\n",
+        q->res->name, q->res->name);
+        break;
     case PRINT_I:
-    break;
+      switch(q->arg1->info.type)
+      {
+        case INT_T:
+          fprintf(f, "li $v0, 1\nlw $a0, %s\nsyscall\n",
+            q->arg1->name);
+          break;
+        case FLOAT_T:
+          fprintf(f, "li $v0, 2\nlw $f12, %s\nsyscall\n",
+            q->arg1->name);
+          break;
+        default:
+          //TODO
+          break;
+      }
+      break;
     case PRINTF_I:
-    break;
+      //TODO
+      break;
     case PRINTMAT_I:
-    break;
+      //TODO
+      break;
     case LABEL_I:
-    break;
+      fprintf(f, "l%d: ", //TODO : make a l0 for error handling
+        (unsigned int)q->res);
+      break;
     case GOTO_I:
-    break;
+      fprintf(f, "j %d\n",
+        (unsigned int)q->res);
+      break;
     case B_GEQ_I:
-    break;
+      fprintf(f, "lw $t1, %s\nlw $t2, %s\nbge $t1, $t2, l%d\n",
+        q->arg1->name, q->arg2->name, (unsigned int)q->res);
+      break;
     case B_LEQ_I:
-    break;
+      fprintf(f, "lw $t1, %s\nlw $t2, %s\nble $t1, $t2, l%d\n",
+        q->arg1->name, q->arg2->name, (unsigned int)q->res);
+      break;
     case B_G_I:
-    break;
+      fprintf(f, "lw $t1, %s\nlw $t2, %s\nbgt $t1, $t2, l%d\n",
+        q->arg1->name, q->arg2->name, (unsigned int)q->res);
+      break;
     case B_L_I:
-    break;
+      fprintf(f, "lw $t1, %s\nlw $t2, %s\nblt $t1, $t2, l%d\n",
+        q->arg1->name, q->arg2->name, (unsigned int)q->res);
+      break;
     case B_EQ_I:
-    break;
+      fprintf(f, "lw $t1, %s\nlw $t2, %s\nbeq $t1, $t2, l%d\n",
+        q->arg1->name, q->arg2->name, (unsigned int)q->res);
+      break;
     case B_NEQ_I:
-    break;
+      fprintf(f, "lw $t1, %s\nlw $t2, %s\nbne $t1, $t2, l%d\n",
+        q->arg1->name, q->arg2->name, (unsigned int)q->res);
+      break;
     default:
+    //TODO
     break;
   }
 }

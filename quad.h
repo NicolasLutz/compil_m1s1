@@ -19,9 +19,9 @@ typedef enum Instruction
 
 #ifdef P_DEBUG
 extern const char *_g_instrDesc[18];
-#define InstructionDesc(i) (_g_instrDesc[(int)(i)])
+#define InstructionDesc(i) (_g_instrDesc[(unsigned int)(i)])
 #else
-#define InstructionDesc(i) (NULL)
+#define InstructionDesc(i) ("(Release mode)")
 #endif
 
 
