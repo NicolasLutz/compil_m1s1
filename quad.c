@@ -284,6 +284,23 @@ void QT_print(const QuadTab *qt)
   }
 }
 
+void QT_writeMIPS(const QuadTab *qt, const char *filename)
+{
+  assert(qt!=NULL);
+  FILE *f=fopen(filename, "w");
+  assert(f!=NULL);
+  unsigned int headIndex=0;
+  while(headIndex!=qt->index)
+  {
+    Q_writeMIPS(&qt->tab[headIndex++], f);
+    if(headIndex>=qt->size)
+    {
+      qt=qt->next;
+      headIndex=0;
+    }
+  }
+}
+
 //Usage example
 /*
 int main()
