@@ -4,9 +4,10 @@
 #include "quad.h"
 #include "symbol.h"
 
-const char *_g_instrDesc[17]={"Affectation", "Addition", "Substraction", "Multiplication",
+const char *_g_instrDesc[18]={"Affectation", "Addition", "Substraction", "Multiplication",
               "Division", "Negation", "Print", "Printf", "Printmat",
-              "Label", "Goto", "Geq", "Leq", "Lower", "Greater", "Equal", "Not equal"};
+              "Label", "Goto", "Geq", "Leq", "Lower", "Greater", "Equal", "Not equal",
+              "Instruction deleted"};
 
 Quad Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res)
 {
@@ -77,9 +78,9 @@ void Q_writeMIPS(const Quad *q, FILE *f)
     break;
     case PRINTMAT_I:
     break;
-    case GOTO_I:
-    break;
     case LABEL_I:
+    break;
+    case GOTO_I:
     break;
     case B_GEQ_I:
     break;

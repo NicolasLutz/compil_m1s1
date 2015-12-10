@@ -11,14 +11,14 @@ typedef enum Instruction
     AFF_I=0, ADD_I=1, SUB_I=2, MULT_I=3, DIV_I=4, NEG_I=5,  //=, +, -, /, *, unary -
     PRINT_I=6, PRINTF_I=7, PRINTMAT_I=8,                     //prints
     LABEL_I=9, GOTO_I=10,                                  //goto, label
-    B_GEQ_I=11, B_LEQ_I=12, B_L_I=13, B_G_I=14, B_EQ_I=15, B_NEQ_I=16 //booleans (G=greater, L=lower, EQ=equal)
-
+    B_GEQ_I=11, B_LEQ_I=12, B_L_I=13, B_G_I=14, B_EQ_I=15, B_NEQ_I=16, //booleans (G=greater, L=lower, EQ=equal)
+    NO_INSTRUCTION_I=17
 } Instruction;
 
 #define GOTO_EMPTY NULL
 
 #ifdef P_DEBUG
-extern const char *_g_instrDesc[17];
+extern const char *_g_instrDesc[18];
 #define InstructionDesc(i) (_g_instrDesc[(int)(i)])
 #else
 #define InstructionDesc(i) (NULL)
