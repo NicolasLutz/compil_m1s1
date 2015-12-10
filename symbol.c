@@ -242,10 +242,9 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 		free(st);
 	}
 
-	void ST_writeMIPS(const SymbolTable *st, const char *filename)
+	void ST_writeMIPS(const SymbolTable *st, FILE *f)
 	{
-		FILE *f=fopen(filename, "w");
-		assert(f);
+		assert(f!=NULL);
 		unsigned int i;
 		Link *l;
 		for(i=0; i<st->size; i++)

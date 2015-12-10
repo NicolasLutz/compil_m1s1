@@ -330,10 +330,8 @@ void QT_print(const QuadTab *qt)
   }
 }
 
-void QT_writeMIPS(const QuadTab *qt, const char *filename)
+void QT_writeMIPS(const QuadTab *qt, FILE *f)
 {
-  assert(qt!=NULL);
-  FILE *f=fopen(filename, "w");
   assert(f!=NULL);
   unsigned int headIndex=0;
   while(headIndex!=qt->index)
@@ -345,6 +343,19 @@ void QT_writeMIPS(const QuadTab *qt, const char *filename)
       headIndex=0;
     }
   }
+}
+
+//================================================================================================
+
+void MATC_Compile(QuadTab *qt, SymbolTable *st, const char *filename)
+{
+  assert(qt!=NULL && st!=NULL && filename!=NULL);
+  FILE *f=fopen(filename, "w");
+  assert(f!=NULL);
+  fprintf(f, ".data\n");
+  ST_writeMIPS(st, f);
+  fprintf(f, "__start:\n");
+  QT_writeMIPS(qt, f);
 }
 
 //Usage example

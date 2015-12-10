@@ -71,7 +71,12 @@ QuadTab     *QT_gen();
 Quad        *QT_add(QuadTab *qt, Quad *quad);
 Quad        *QT_get(const QuadTab *qt, unsigned int index);
 void        QT_print(const QuadTab *qt);
-void        QT_writeMIPS(const QuadTab *qt, const char *filename);
+void        QT_writeMIPS(const QuadTab *qt, FILE *f);
+
+//================================================================================================
+
+void MATC_Compile(QuadTab *qt, SymbolTable *st, const char *filename);
+//void MATC_Optimize(QuadTab *qt);
 
 /*
 %union
