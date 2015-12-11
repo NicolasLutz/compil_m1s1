@@ -61,18 +61,18 @@ void Q_writeMIPS(const Quad *q, FILE *f)
   switch (q->op)
   {
     case AFF_I: //no need to distinct between int and float
-      fprintf(f, "lw $t0, %s\nsw $t0, %s\n",
+      fprintf(f, "lw $t0, %s_var\nsw $t0, %s_var\n",
         q->arg1->name, q->res->name);
       break;
     case ADD_I:
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s\nlw $t2, %s\nadd $t0, $t1, $t2\nsw $t0, %s\n",
+          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nadd $t0, $t1, $t2\nsw $t0, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s\nl.s $f2, %s\nadd.s $f0, $f1, $f2\ns.s $f0, %s\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nadd.s $f0, $f1, $f2\ns.s $f0, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         default:
@@ -83,11 +83,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s\nlw $t2, %s\nsub $t0, $t1, $t2\nsw $t0, %s\n",
+          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nsub $t0, $t1, $t2\nsw $t0, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s\nl.s $f2, %s\nsub.s $f0, $f1, $f2\ns.s $f0, %s\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nsub.s $f0, $f1, $f2\ns.s $f0, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         default:
@@ -98,11 +98,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s\nlw $t2, %s\nmult $t1, $t2\nsw $LO, %s\n",
+          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nmult $t1, $t2\nsw $LO, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s\nl.s $f2, %s\nmul.s $f0, $f1, $f2\ns.s $f0, %s\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nmul.s $f0, $f1, $f2\ns.s $f0, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         default:
@@ -113,11 +113,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s\nlw $t2, %s\ndiv $t1, $t2\nsw $LO, %s\n",
+          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\ndiv $t1, $t2\nsw $LO, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s\nl.s $f2, %s\ndiv $f0, $f1, $f2\ns.s $f0, %s\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\ndiv $f0, $f1, $f2\ns.s $f0, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         default:
@@ -128,11 +128,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s\nneg $t0, $t1\nsw $t0, %s\n",
+          fprintf(f, "lw $t1, %s_var\nneg $t0, $t1\nsw $t0, %s_var\n",
             q->res->name, q->res->name);
             break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s\nneg.s $f0, $f1\ns.s $f0, %s\n",
+          fprintf(f, "l.s $f1, %s_var\nneg.s $f0, $f1\ns.s $f0, %s_var\n",
             q->res->name, q->res->name);
           break;
         default:
@@ -142,11 +142,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "li $v0, 1\nlw $a0, %s\nsyscall\n",
+          fprintf(f, "li $v0, 1\nlw $a0, %s_var\nsyscall\n",
             q->arg1->name);
           break;
         case FLOAT_T:
-          fprintf(f, "li $v0, 2\nlw $f12, %s\nsyscall\n",
+          fprintf(f, "li $v0, 2\nlw $f12, %s_var\nsyscall\n",
             q->arg1->name);
           break;
         default:
@@ -172,11 +172,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s\nlw $t2, %s\nbge $t1, $t2, l%d\n",
+          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nbge $t1, $t2, l%d\n",
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s\nl.s $f2, %s\nc.lt.s $f2, $f1, l%d\n", //really now mips ?
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.lt.s $f2, $f1, l%d\n", //really now mips ?
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         default:
@@ -187,11 +187,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s\nlw $t2, %s\nble $t1, $t2, l%d\n",
+          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nble $t1, $t2, l%d\n",
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s\nl.s $f2, %s\nc.le.s $f1, $f2, l%d\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.le.s $f1, $f2, l%d\n",
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         default:
@@ -202,11 +202,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s\nlw $t2, %s\nbgt $t1, $t2, l%d\n",
+          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nbgt $t1, $t2, l%d\n",
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s\nl.s $f2, %s\nc.le.s $f2, $f1, l%d\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.le.s $f2, $f1, l%d\n",
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
         default:
           break;
@@ -216,11 +216,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s\nlw $t2, %s\nblt $t1, $t2, l%d\n",
+          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nblt $t1, $t2, l%d\n",
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s\nl.s $f2, %s\nc.lt.s $f1, $f2, l%d\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.lt.s $f1, $f2, l%d\n",
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         default:
@@ -228,11 +228,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       }
       break;
     case B_EQ_I:
-      fprintf(f, "lw $t1, %s\nlw $t2, %s\nbeq $t1, $t2, l%d\n",
+      fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nbeq $t1, $t2, l%d\n",
         q->arg1->name, q->arg2->name, (unsigned int)q->res);
       break;
     case B_NEQ_I:
-      fprintf(f, "lw $t1, %s\nlw $t2, %s\nbne $t1, $t2, l%d\n",
+      fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nbne $t1, $t2, l%d\n",
         q->arg1->name, q->arg2->name, (unsigned int)q->res);
       break;
     default:
