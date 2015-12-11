@@ -266,7 +266,5 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 				l=l->next;
 			}
 		}
-		fclose(f);
 		return;
-
 	}
