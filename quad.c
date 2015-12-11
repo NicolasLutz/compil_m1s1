@@ -454,39 +454,3 @@ void MATC_Compile(QuadTab *qt, SymbolTable *st, const char *filename)
   fprintf(f, "__start:\n");
   QT_writeMIPS(qt, f);
 }
-
-//Usage example
-/*
-int main()
-{
-  size_t stSize=128;
-  SymbolTable *st=ST_gen(stSize);
-  SymbolInfo examplePntr=SI_genArray(&stSize);
-  SymbolInfo exampleInt=SI_genInt(stSize);
-  SymbolInfo exampleFloat=SI_genFloat(3.13f);
-  const char *mStr="mon_pointeur"; //m stands for matrix
-  const char *iStr="mon_int";
-  const char *fStr="mon_float";
-  ST_add(st, mStr, &examplePntr);
-  ST_add(st, iStr, &exampleInt);
-  ST_add(st, fStr, &exampleFloat);
-
-  exampleFloat.value.fVal=3.14f;
-  ST_add(st, fStr, &exampleFloat);
-
-  exampleFloat.value.fVal=7.08f;
-  ST_addTmp(st, &exampleFloat);
-
-  exampleInt.value.iVal=1;
-  ST_addTmp(st, &exampleInt);
-
-    ST_print(st);
-  ST_writeMIPS(st, "test.s");
-
-  //quads
-  Quad *q1=Q_gen(AFF_I, ST_lookup(st, "__tmp_0"), NULL, ST_lookup(st, iStr));
-  Quad *q2=Q_gen(ADD_I, ST_lookup(st, iStr), ST_lookup(st, "__tmp_1"), ST_lookup(st, iStr));
-
-  ST_destroy(st);
-  return 0;
-}*/
