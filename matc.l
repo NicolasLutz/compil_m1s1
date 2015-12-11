@@ -44,6 +44,9 @@ reel    {entier}("."{entier})?{exposant}?
 "false"    return(YFALSE);
 "int"      return(YINT);
 "float"    return(YFLOAT);
+"print"		 return(YPRINT);
+"printf"	 return(YPRINTF);
+"printmat" return(YPRINTMAT);
 
 {identificateur} {yylval.stringVal=strdup(yytext);
 		         return YID; }
