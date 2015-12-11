@@ -36,7 +36,7 @@ int next_quad =0;
 
 %token YASSIGN YWHILE YDO YIF YELSE
 %token YEQUAL YNEQ YTRUE YFALSE YOR
-%token YINT YFLOAT
+%token YINT YFLOAT YPRINT YPRINTF YPRINTMAT
 %token <intVal> YNUM
 %token <stringVal> YID
 
@@ -66,6 +66,7 @@ axiom:
 		 ST_print(g_st);
 		 printf("===QUAD TABLE===\n");
 		 QT_print(g_qt);
+		 MATC_Compile(g_qt, g_st, "squalala.s");
 	 }
 
 stmt_list :
@@ -119,14 +120,36 @@ then_stmt :
 	;
 
 expression :
-	var YASSIGN expr
+	aff_expr
+	| YPRINT '(' expr ')'
 	{
-		Quad q=Q_gen(AFF_I, $3, NULL, $1);
-		printf("Added quad :\n\t");
+		Quad q=Q_gen(PRINT_I, $3, NULL, NULL);
 		Q_print(QT_add(g_qt, &q));
 	}
 	| expr
   ;
+
+aff_expr:
+	YINT YID YASSIGN expr
+	{
+		int somevalue;
+		SymbolInfo si=SI_genInt(somevalue);
+		Quad q=Q_gen(AFF_I, $4, NULL, ST_add(g_st, $2, &si));
+		QT_add(g_qt, &q);
+	}
+	| YFLOAT YID YASSIGN expr
+	{
+		float somevalue;
+		SymbolInfo si=SI_genFloat(somevalue);
+		Quad q=Q_gen(AFF_I, $4, NULL, ST_add(g_st, $2, &si));
+		QT_add(g_qt, &q);
+	}
+	| var YASSIGN expr
+	{
+		Quad q=Q_gen(AFF_I, $3, NULL, $1);
+		QT_add(g_qt, &q);
+	}
+
 var :
 	YID
 	{
