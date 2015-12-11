@@ -453,4 +453,5 @@ void MATC_Compile(QuadTab *qt, SymbolTable *st, const char *filename)
   ST_writeMIPS(st, f);
   fprintf(f, "__start:\n");
   QT_writeMIPS(qt, f);
+  fclose(f);
 }
