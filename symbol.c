@@ -255,10 +255,10 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 				switch(l->symbol.info.type)
 				{
 					case INT_T:
-						fprintf(f, "%s_var .name %d\n", l->symbol.name, l->symbol.info.value.iVal);
+						fprintf(f, "%s_var: .word %d\n", l->symbol.name, l->symbol.info.value.iVal);
 						break;
 					case FLOAT_T:
-						fprintf(f, "%s_var .float %f\n", l->symbol.name, l->symbol.info.value.fVal);
+						fprintf(f, "%s_var: .float %f\n", l->symbol.name, l->symbol.info.value.fVal);
 						break;
 					default:
 						break;

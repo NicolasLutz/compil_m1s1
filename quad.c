@@ -165,7 +165,7 @@ void Q_writeMIPS(const Quad *q, FILE *f)
         (unsigned int)q->res);
       break;
     case GOTO_I:
-      fprintf(f, "j %d\n",
+      fprintf(f, "j l%d\n",
         (unsigned int)q->res);
       break;
     case B_GEQ_I:
@@ -451,7 +451,8 @@ void MATC_Compile(QuadTab *qt, SymbolTable *st, const char *filename)
   assert(f!=NULL);
   fprintf(f, ".data\n");
   ST_writeMIPS(st, f);
-  fprintf(f, "__start:\n");
+  fprintf(f, ".text\nmain:\n");
   QT_writeMIPS(qt, f);
+  fprintf(f, "jr $ra\n");
   fclose(f);
 }
