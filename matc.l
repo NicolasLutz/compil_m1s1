@@ -23,7 +23,7 @@ entier    {chiffre}+
 exposant  [eE][+-]?{entier}
 lettre 		[a-zA-Z_]
 identificateur {lettre}({lettre}|{chiffre})*
-
+string \"([^"]|\\\")*\"
 reel    {entier}("."{entier})?{exposant}?
 
 %%
@@ -53,6 +53,9 @@ reel    {entier}("."{entier})?{exposant}?
 
 {reel}     { yylval.intVal=atoi(yytext);
       	   return(YNUM);}
+
+{string}	{yylval.stringVal=strdup(yytext);
+					return YSTRING;}
 
 \n    return(yytext[0]);
 
