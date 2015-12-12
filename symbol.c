@@ -53,6 +53,16 @@
 
 	//=============================================================================
 
+	SymbolInfo SI_genString(char *value)//no copy
+	{
+		SymbolInfo info;
+		info.value.sVal=value;
+		info.type=STRING_T;
+		return info;
+	}
+
+//=============================================================================
+
 	SymbolInfo SI_genArray(void *value)
 	{
 		SymbolInfo info;
@@ -60,6 +70,7 @@
 		info.type=ARRAY_T;
 		return info;
 	}
+
 
 	//=============================================================================
 	//=============================================================================
@@ -213,6 +224,10 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 						printf("%3d    %12f  %s\n",
 							i, l->symbol.info.value.fVal, l->symbol.name);
 						break;
+					case STRING_T:
+						printf("%3d (const string)%s : %s\n",
+							i, l->symbol.name, l->symbol.info.value.sVal);
+						break;
 					default:
 						printf("%3d    %12p  %s\n",
 							i, l->symbol.info.value.mVal, l->symbol.name);
@@ -222,24 +237,6 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 			}
 		}
 		return;
-	}
-
-	void ST_destroy(SymbolTable *st)
-	{//destroys everything in st
-		unsigned int i;
-		Link *l;
-		for(i=0; i<st->size; i++)
-		{
-	        while((l=st->sl[i]->head))
-			{
-				st->sl[i]->head=l->next;
-				free(l->symbol.name);
-				free(l);
-			}
-			free(st->sl[i]);
-		}
-		free(st->sl);
-		free(st);
 	}
 
 	void ST_writeMIPS(const SymbolTable *st, FILE *f)
@@ -260,6 +257,9 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 					case FLOAT_T:
 						fprintf(f, "%s_var: .float %f\n", l->symbol.name, l->symbol.info.value.fVal);
 						break;
+					case STRING_T:
+						fprintf(f, "%s_var: .asciiz %s\n", l->symbol.name, l->symbol.info.value.sVal);
+						break;
 					default:
 						break;
 				}
@@ -267,4 +267,22 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 			}
 		}
 		return;
+	}
+
+	void ST_destroy(SymbolTable *st)
+	{//destroys everything in st
+		unsigned int i;
+		Link *l;
+		for(i=0; i<st->size; i++)
+		{
+	    while((l=st->sl[i]->head))
+			{
+				st->sl[i]->head=l->next;
+				free(l->symbol.name);
+				free(l);
+			}
+			free(st->sl[i]);
+		}
+		free(st->sl);
+		free(st);
 	}

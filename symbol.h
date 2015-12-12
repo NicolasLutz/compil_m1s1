@@ -24,9 +24,10 @@ typedef union Value
     float fVal;
     int iVal;
     void *mVal;
+    char *sVal;
 } Value;
 
-typedef enum Typename {INT_T, FLOAT_T, ARRAY_T} Typename;
+typedef enum Typename {INT_T, FLOAT_T, ARRAY_T, STRING_T} Typename;
 
 typedef struct
 {
@@ -65,6 +66,7 @@ int 		    _straightStrCmp(const char *string1, const char *string2);
 SymbolInfo	    SI_genInt(int value);
 SymbolInfo	    SI_genFloat(float value);
 SymbolInfo	    SI_genArray(void *value);
+SymbolInfo	    SI_genString(char *value);//cleaner  !
 
 Symbol 		    S_gen(const char *name, SymbolInfo *info);
 

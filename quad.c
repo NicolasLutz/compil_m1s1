@@ -155,7 +155,8 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       }
       break;
     case PRINTF_I:
-      //TODO
+      fprintf(f, "la $a0, %s_var\nli $v0, 4\nsyscall\n",
+        q->arg1->name);
       break;
     case PRINTMAT_I:
       //TODO

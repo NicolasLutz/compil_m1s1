@@ -39,6 +39,7 @@ int next_quad =0;
 %token YINT YFLOAT YPRINT YPRINTF YPRINTMAT
 %token <intVal> YNUM
 %token <stringVal> YID
+%token <stringVal> YSTRING
 
 %type <codeCondition_t> condition
 %type <symbol_t> expr
@@ -66,7 +67,7 @@ axiom:
 		 ST_print(g_st);
 		 printf("===QUAD TABLE===\n");
 		 QT_print(g_qt);
-		 MATC_Compile(g_qt, g_st, "squalala.s");
+		 MATC_Compile(g_qt, g_st, "out.s");
 	 }
 
 stmt_list :
@@ -124,7 +125,13 @@ expression :
 	| YPRINT '(' expr ')'
 	{
 		Quad q=Q_gen(PRINT_I, $3, NULL, NULL);
-		Q_print(QT_add(g_qt, &q));
+		QT_add(g_qt, &q);
+	}
+	| YPRINTF '(' YSTRING ')'
+	{
+		SymbolInfo si=SI_genString($3);
+		Quad q=Q_gen(PRINTF_I, ST_addTmp(g_st, &si), NULL, NULL);
+		QT_add(g_qt, &q);
 	}
 	| expr
   ;
@@ -282,8 +289,17 @@ rel :
 	;
 
 %%
-int main()
+int main(int argc, char **argv)
 {
+	char *outFile;
+	if(argc==1)
+	{
+		outFile="out.s";
+	}
+	else
+	{
+		outFile=argv[1];
+	}
 	size_t qtSize=1024;
 	g_qt=QT_gen(qtSize);
 	g_st=ST_gen(128);
