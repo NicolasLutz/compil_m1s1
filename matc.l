@@ -20,11 +20,11 @@ commentaire "/*"([^*]*[*][^*/])*[^*]*[*]+"/"
 
 chiffre   [0-9]
 entier    {chiffre}+
-exposant  [eE][+-]?{entier}
 lettre 		[a-zA-Z_]
 identificateur {lettre}({lettre}|{chiffre})*
 string \"([^"]|\\\")*\"
-reel    {entier}("."{entier})?{exposant}?
+exposant  [eE][+-]?{entier}
+reel ({entier}\.[0-9]*|\.{entier}){exposant}?|{entier}{exposant}
 
 %%
 
@@ -51,8 +51,11 @@ reel    {entier}("."{entier})?{exposant}?
 {identificateur} {yylval.stringVal=strdup(yytext);
 		         return YID; }
 
-{reel}     { yylval.intVal=atoi(yytext);
-      	   return(YNUM);}
+{entier}     { yylval.intVal=atoi(yytext);
+      	   		return(YNUM);}
+
+{reel}     { yylval.floatVal=atof(yytext);
+							 return(YREEL);}
 
 {string}	{yylval.stringVal=strdup(yytext);
 					return YSTRING;}
