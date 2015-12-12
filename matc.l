@@ -32,6 +32,8 @@ reel ({entier}\.[0-9]*|\.{entier}){exposant}?|{entier}{exposant}
 
 "=="       {return(YEQUAL);}
 "!="       {return(YNEQ);}
+"<="			 {return(YLEQ);}
+">="			 {return(YGEQ);}
 "&&"	   	 {return(YAND);}
 "||"	   	 {return(YOR);}
 "!"	       {return(YNOT);}
