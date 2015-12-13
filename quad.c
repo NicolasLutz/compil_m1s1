@@ -146,7 +146,7 @@ void Q_writeMIPS(const Quad *q, FILE *f)
             q->arg1->name);
           break;
         case FLOAT_T:
-          fprintf(f, "li $v0, 2\nlw $f12, %s_var\nsyscall\n",
+          fprintf(f, "lw $v0, 2\nl.s $f12, %s_var\nsyscall\n",
             q->arg1->name);
           break;
         default:
@@ -244,7 +244,7 @@ void Q_writeMIPS(const Quad *q, FILE *f)
 
 void Q_print(const Quad *q)
 {
-  if(q->op>9)
+  if(q->op>9 && q->op<17) //gotos range
   {
     printf("%12s %12s %12s %12s%d\n",
       InstructionDesc(q->op),
@@ -456,4 +456,15 @@ void MATC_Compile(QuadTab *qt, SymbolTable *st, const char *filename)
   QT_writeMIPS(qt, f);
   fprintf(f, "jr $ra\n");
   fclose(f);
+}
+
+void MATC_error()
+{
+  compiledCorrectly=0;
+  fprintf(stderr, "Error: ");
+}
+
+void MATC_warning()
+{
+  fprintf(stderr, "Warning: ");
 }
