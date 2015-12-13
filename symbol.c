@@ -1,5 +1,7 @@
 	#include "symbol.h"
 
+	const char *_g_typeDesc[4]={"int", "float", "matrix", "string {aka (char *)}"};
+
 	int _genIndex(const char *string)
 	{
 		assert(string!=NULL);
@@ -38,6 +40,7 @@
 		SymbolInfo info;
 		info.value.iVal=value;
 		info.type=INT_T;
+		info.cst=false;
 		return info;
 	}
 
@@ -48,6 +51,7 @@
 		SymbolInfo info;
 		info.value.fVal=value;
 		info.type=FLOAT_T;
+		info.cst=false;
 		return info;
 	}
 
@@ -58,6 +62,7 @@
 		SymbolInfo info;
 		info.value.sVal=value;
 		info.type=STRING_T;
+		info.cst=false; //not THAT kind of cst!
 		return info;
 	}
 
@@ -68,9 +73,14 @@
 		SymbolInfo info;
 		info.value.mVal=value;
 		info.type=ARRAY_T;
+		info.cst=false;
 		return info;
 	}
 
+const char *SI_typeToString(Typename t)
+{
+	return _g_typeDesc[t];
+}
 
 	//=============================================================================
 	//=============================================================================
@@ -200,6 +210,8 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 	Symbol *ST_addTmp(SymbolTable *st, SymbolInfo *info)
 	{
 	    static unsigned int count=0;
+			assert(info!=NULL); //we're declaring a cst ! info cannot be null.
+			info->cst=true; //it's also a cst
 	    sprintf(st->_tmpName,"__tmp_%d",count++);
 	    return ST_add(st,st->_tmpName,info);
 	}

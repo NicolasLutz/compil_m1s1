@@ -19,6 +19,8 @@
        __typeof__ (b) _b = (b); \
      _a < _b ? _a : _b; })
 
+extern const char *_g_typeDesc[4];
+
 typedef union Value
 {
     float fVal;
@@ -27,12 +29,13 @@ typedef union Value
     char *sVal;
 } Value;
 
-typedef enum Typename {INT_T, FLOAT_T, ARRAY_T, STRING_T} Typename;
+typedef enum Typename {INT_T=0, FLOAT_T=1, ARRAY_T=2, STRING_T=3} Typename;
 
 typedef struct
 {
     Value value;
     Typename type;
+    bool cst;
 } SymbolInfo;
 
 typedef struct
@@ -67,6 +70,7 @@ SymbolInfo	    SI_genInt(int value);
 SymbolInfo	    SI_genFloat(float value);
 SymbolInfo	    SI_genArray(void *value);
 SymbolInfo	    SI_genString(char *value);//cleaner  !
+const char      *SI_typeToString(Typename t);
 
 Symbol 		    S_gen(const char *name, SymbolInfo *info);
 
