@@ -24,7 +24,7 @@ lettre 		[a-zA-Z_]
 identificateur {lettre}({lettre}|{chiffre})*
 string \"([^"]|\\\")*\"
 exposant  [eE][+-]?{entier}
-reel ({entier}\.[0-9]*|\.{entier}){exposant}?|{entier}{exposant}
+reel {entier}("."{entier})?{exposant}?
 
 %%
 
@@ -54,10 +54,10 @@ reel ({entier}\.[0-9]*|\.{entier}){exposant}?|{entier}{exposant}
 		         return YID; }
 
 {entier}     { yylval.intVal=atoi(yytext);
-      	   		return(YNUM);}
+						  return(YNUM);}
 
-{reel}     { yylval.floatVal=atof(yytext);
-							 return(YREEL);}
+{reel}     { yylval.floatVal=(float)atof(yytext);
+						 return(YREEL);}
 
 {string}	{yylval.stringVal=strdup(yytext);
 					return YSTRING;}
