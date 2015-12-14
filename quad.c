@@ -481,7 +481,36 @@ void MATC_error()
   fprintf(stderr, "Error: ");
 }
 
+void MATC_error_undeclared(const char *string)
+{
+  fprintf(stderr, "%s undeclared (first use in function)\n",
+    string);
+}
+
 void MATC_warning()
 {
   fprintf(stderr, "Warning: ");
+}
+
+//for the following, please ensure parameters aren't null !
+
+void MATC_warning_unsafeAffectation(Symbol *s1, Symbol *s2)
+{
+  assert(s1 && s2);
+  fprintf(stderr, "Unsafe affectation from %s of type %s to %s of type %s\n",
+    s2->name, SI_typeToString(s2->info.type), s1->name, SI_typeToString(s1->info.type));
+}
+
+void MATC_warning_unsafeOperation(Symbol *s1, Symbol *s2)
+{
+  assert(s1 && s2);
+  fprintf(stderr, "Unsafe operation (%s of type %s and %s of type %s)\n",
+    s1->name, SI_typeToString(s1->info.type), s2->name, SI_typeToString(s2->info.type));
+}
+
+void MATC_warning_unsafeComparasion(Symbol *s1, Symbol *s2)
+{
+  assert(s1 && s2);
+  fprintf(stderr, "Unsafe comparasion between %s of type %s and %s of type %s\n",
+    s1->name, SI_typeToString(s1->info.type), s2->name, SI_typeToString(s2->info.type));
 }

@@ -81,6 +81,11 @@ void        QT_destroy(QuadTab *qt);
 void MATC_Compile(QuadTab *qt, SymbolTable *st, const char *filename);
 //void MATC_Optimize(QuadTab *qt);
 void MATC_error();
+void MATC_error_undeclared(const char *string);
+
 void MATC_warning();
+void MATC_warning_unsafeAffectation(Symbol *s1, Symbol *s2);
+void MATC_warning_unsafeOperation(Symbol *s1, Symbol *s2);
+void MATC_warning_unsafeComparasion(Symbol *s1, Symbol *s2);
 
 #endif
