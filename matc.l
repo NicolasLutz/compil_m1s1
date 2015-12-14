@@ -15,7 +15,7 @@ int lineno=0; //<initialiser a 0
 %option nounput
 %option noinput
 
-blancs    [ \t]+
+blancs    [ \t\n]+
 commentaire "/*"([^*]*[*][^*/])*[^*]*[*]+"/"
 
 chiffre   [0-9]
@@ -30,13 +30,13 @@ reel {entier}("."{entier})?{exposant}?
 
 [+-/()\[\]\{\}^~,;\>\<] {return(yytext[0]);}
 
-"=="       {return(YEQUAL);}
-"!="       {return(YNEQ);}
-"<="			 {return(YLEQ);}
-">="			 {return(YGEQ);}
-"&&"	   	 {return(YAND);}
-"||"	   	 {return(YOR);}
-"!"	       {return(YNOT);}
+"=="       return(YEQUAL);
+"!="       return(YNEQ);
+"<="			 return(YLEQ);
+">="			 return(YGEQ);
+"&&"	   	 return(YAND);
+"||"	   	 return(YOR);
+"!"	       return(YNOT);
 "="        return(YASSIGN);
 "while"    return(YWHILE);
 "do"       return(YDO);
@@ -49,6 +49,8 @@ reel {entier}("."{entier})?{exposant}?
 "print"		 return(YPRINT);
 "printf"	 return(YPRINTF);
 "printmat" return(YPRINTMAT);
+"main"		 return(YMAIN);
+"return"   return(YRETURN);
 
 {identificateur} {yylval.stringVal=strdup(yytext);
 		         return YID; }
@@ -61,8 +63,6 @@ reel {entier}("."{entier})?{exposant}?
 
 {string}	{yylval.stringVal=strdup(yytext);
 					return YSTRING;}
-
-\n    return(yytext[0]);
 
 {blancs}   { /* On ignore */ }
 {commentaire} { /* On ignore */ }
