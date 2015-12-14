@@ -82,6 +82,21 @@ const char *SI_typeToString(Typename t)
 	return _g_typeDesc[t];
 }
 
+bool SI_castFloat(SymbolInfo *si)
+{
+	if(si==NULL)
+		return false;
+	if(si->type==FLOAT_T)
+		return true;
+	if(si->cst && (si->type==INT_T))
+	{
+		si->value.fVal=(float)si->value.iVal;
+		si->type=FLOAT_T;
+		return true;
+	}
+	return false;
+}
+
 	//=============================================================================
 	//=============================================================================
 

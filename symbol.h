@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #define maxStrLength 255 //defines how long a symbol name can be
 
@@ -71,6 +72,7 @@ SymbolInfo	    SI_genFloat(float value);
 SymbolInfo	    SI_genArray(void *value);
 SymbolInfo	    SI_genString(char *value);//cleaner  !
 const char      *SI_typeToString(Typename t);
+bool            SI_castFloat(SymbolInfo *si); //casts si into float and returns false if not able to
 
 Symbol 		    S_gen(const char *name, SymbolInfo *info);
 
