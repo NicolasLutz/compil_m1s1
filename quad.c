@@ -146,7 +146,7 @@ void Q_writeMIPS(const Quad *q, FILE *f)
             q->arg1->name);
           break;
         case FLOAT_T:
-          fprintf(f, "lw $v0, 2\nl.s $f12, %s_var\nsyscall\n",
+          fprintf(f, "li $v0, 2\nl.s $f12, %s_var\nsyscall\n",
             q->arg1->name);
           break;
         default:
@@ -313,8 +313,13 @@ QuadList *QL_concat(QuadList *ql1, QuadList* ql2)
 {
   if(ql1==NULL)
     return ql2;
-  if(ql2==NULL || QL_empty(ql2))
+  if(ql2==NULL)
     return ql1;
+  if(QL_empty(ql2))
+  {
+    QL_free(ql2);
+    return ql1;
+  }
   if(ql1->tail==NULL)
   {
     ql1->tail=ql2->tail;
@@ -325,7 +330,7 @@ QuadList *QL_concat(QuadList *ql1, QuadList* ql2)
     ql1->tail->next=ql2->head;
     ql1->tail=ql2->tail;
   }
-  free(ql2); //TODO
+  QL_free(ql2);
   return ql1;
 }
 
@@ -339,6 +344,7 @@ void QL_backpatch(QuadList *ql, Quad *labelQuad)
       Q_backpatch(q, labelQuad->res);
       q=q->next;
     }
+    QL_free(ql); //we don't need ql anymore
 }
 
 void QL_print (const QuadList *ql)
@@ -355,7 +361,6 @@ void QL_print (const QuadList *ql)
 
 void QL_free(QuadList *ql)
 {
-  assert(ql!=NULL);
   free(ql);
   return;
 }
@@ -440,6 +445,18 @@ void QT_writeMIPS(const QuadTab *qt, FILE *f)
       qt=qt->next;
       headIndex=0;
     }
+  }
+}
+
+void QT_destroy(QuadTab *qt)
+{
+  QuadTab *next;
+  while(qt!=NULL)
+  {
+    next=qt->next;
+    free(qt->tab);
+    free(qt);
+    qt=next;
   }
 }
 

@@ -74,6 +74,7 @@ Quad        *QT_add(QuadTab *qt, Quad *quad);
 Quad        *QT_get(const QuadTab *qt, unsigned int index);
 void        QT_print(const QuadTab *qt);
 void        QT_writeMIPS(const QuadTab *qt, FILE *f);
+void        QT_destroy(QuadTab *qt);
 
 //================================================================================================
 
