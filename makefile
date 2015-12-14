@@ -4,7 +4,7 @@ LYFLAGS=-ly -lfl -lm
 SRC=$(wildcard *.c)
 OBJ=$(SRC:.c=.o)
 
-all: yacc lex main remove_obj_only run exec
+all: yacc lex main remove_obj_only run_test exec
 
 exec:
 	spim -f out.s
@@ -35,3 +35,9 @@ clean: remove_obj_only
 
 run:
 	./main
+
+run_test:
+	./main "out.s" "simple_test.matc"
+
+run_test_mmcheck:
+	valgrind --leak-check=full --show-leak-kinds=all ./main "out.s" "simple_test.matc"
