@@ -12,7 +12,7 @@ exec:
 all_noclean: yacc lex main run
 
 remove_obj_only:
-	@rm lex.* y.* *.o
+	@rm lex.* y.t* *.o
 
 main: $(OBJ)
 	@$(CC) -o $@ $^ lex.yy.c y.tab.c $(CFLAGS) $(LYFLAGS)
@@ -22,6 +22,7 @@ main: $(OBJ)
 
 yacc: *.y
 	yacc -d --verbose matc.y
+#add --debug to debug it
 
 lex: *.l
 	flex matc.l
