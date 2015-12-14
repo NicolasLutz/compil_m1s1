@@ -109,6 +109,27 @@ bool SI_castFloat(SymbolInfo *si)
 		return s;
 	}
 
+	bool S_castFloat(Symbol *s1, Symbol *s2)
+	{
+		bool castFine=true;
+		if(s1!=NULL && s2!=NULL && s1->info.type!=s2->info.type)
+		{
+			if(s2->info.cst && s1->info.type==FLOAT_T)
+			{
+				if(!SI_castFloat(&s2->info))
+					castFine=false;
+			}
+			else if(s1->info.cst && s2->info.type==FLOAT_T)
+			{
+				if(!SI_castFloat(&s1->info))
+					castFine=false;
+			}
+			else
+				castFine=false;
+		}
+		return castFine;
+	}
+
 	//=============================================================================
 	//=============================================================================
 
@@ -225,7 +246,6 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 	Symbol *ST_addTmp(SymbolTable *st, SymbolInfo *info)
 	{
 	    static unsigned int count=0;
-			assert(info!=NULL); //we're declaring a cst ! info cannot be null.
 			info->cst=true; //it's also a cst
 	    sprintf(st->_tmpName,"__tmp_%d",count++);
 	    return ST_add(st,st->_tmpName,info);

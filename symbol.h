@@ -74,7 +74,11 @@ SymbolInfo	    SI_genString(char *value);//cleaner  !
 const char      *SI_typeToString(Typename t);
 bool            SI_castFloat(SymbolInfo *si); //casts si into float and returns false if not able to
 
+
 Symbol 		    S_gen(const char *name, SymbolInfo *info);
+bool          S_castFloat(Symbol *s1, Symbol *s2);
+//^ casts s1 or s2 as float in case of conflict and returns
+//true if no conflict was detected or the cast was successful.
 
 Link 		    *L_gen(Symbol *s);
 
@@ -88,5 +92,6 @@ Symbol 	      *ST_lookup(SymbolTable *st, const char *name);
 void 		       ST_print(const SymbolTable *st);
 void		       ST_writeMIPS(const SymbolTable *st, FILE *f);
 void 		       ST_destroy(SymbolTable *st);
+
 
 #endif
