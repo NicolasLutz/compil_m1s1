@@ -1,0 +1,27 @@
+int main()
+{
+  printf("Testing declaration+affectation float f=3.5...\n");
+  float f=3.5;
+  float i=0;
+  printf("Okay! Testing to display i from 1 to 9...\n");
+  while(i<=8)
+  {
+    i=i+1;
+    printf("i: ");
+    print(i);
+    printf("\n");
+  }
+  printf("Okay! Testing f!=3.5 and else...\n");
+  if(f!=3.5)
+  {
+    printf("wrong! You're FIRED !\n");
+    print(f);
+  }
+  else
+  {
+    printf("Okay! Testing print(f+3)...\n");
+    print(f+3);
+    printf("\n");
+  }
+  printf("You got it!\n");
+}
