@@ -11,6 +11,7 @@
 void yyerror(char * s);
 int yylex();
 void lex_free();
+int yywarp();
 int yydebug=1;
 extern FILE *yyin;
 
@@ -44,7 +45,7 @@ char *outFile;
 %token YASSIGN YWHILE YDO YIF YELSE
 %token YEQUAL YNEQ YTRUE YFALSE YOR
 %token YINT YFLOAT YPRINT YPRINTF YPRINTMAT
-%token YLEQ YGEQ YMAIN YRETURN
+%token YLEQ YGEQ YMAIN YRETURN YEOF YPP YMM
 %token <intVal> YNUM
 %token <floatVal> YREEL
 %token <stringVal> YID
@@ -58,6 +59,7 @@ char *outFile;
 %type <qlist_t> tagGoto //a goto
 %type <type_t> type
 %type <instruction_t> rel
+%type <instruction_t> incr
 
 %nonassoc NO_ELSE
 %nonassoc YELSE
@@ -69,17 +71,14 @@ char *outFile;
 %left '+' '-'
 %left '*' '/'
 %left UMINUS
+%left YPP YMM
 %left YNOT
 
 %%
 
-program:
+S :
+	program
 	{
-
-	}
-	| fn_declaration
-	{
-		printf("Match !! \n");
 		printf("===SYMBOL TABLE===\n");
 		ST_print(g_st);
 		printf("===QUAD TABLE===\n");
@@ -88,9 +87,11 @@ program:
 		 MATC_Compile(g_qt, g_st, outFile);
 		else
 		 fprintf(stderr, "No output produced: Errors have been detected.\n");
-		ST_destroy(g_st);
-		QT_destroy(g_qt);
 	}
+	;
+
+program:
+	| fn_declaration
 	;
 
 fn_declaration:
@@ -159,10 +160,9 @@ expr :
 		$$=ST_lookup(g_st, $1);
 		if($$==NULL)
 		{
-			MATC_error();
 			MATC_error_undeclared($1);
-			free($1);
 		}
+		free($1);
 	}
 	| const
 	{
@@ -173,7 +173,6 @@ expr :
 		SymbolInfo *p_si = $1!=NULL ? &$1->info : NULL;
 		if(!S_castFloat($1, $3))
 		{
-			MATC_warning();
 			MATC_warning_unsafeOperation($1, $3);
 		}
 		$$=ST_addTmp(g_st, p_si);
@@ -185,7 +184,6 @@ expr :
 		SymbolInfo *p_si = $1!=NULL ? &$1->info : NULL;
 		if(!S_castFloat($1, $3))
 		{
-			MATC_warning();
 			MATC_warning_unsafeOperation($1, $3);
 		}
 		$$=ST_addTmp(g_st, p_si);
@@ -197,7 +195,6 @@ expr :
 		SymbolInfo *p_si = $1!=NULL ? &$1->info : NULL;
 		if(!S_castFloat($1, $3))
 		{
-			MATC_warning();
 			MATC_warning_unsafeOperation($1, $3);
 		}
 		$$=ST_addTmp(g_st, p_si);
@@ -209,14 +206,28 @@ expr :
 		SymbolInfo *p_si = $1!=NULL ? &$1->info : NULL;
 		if(!S_castFloat($1, $3))
 		{
-			MATC_warning();
 			MATC_warning_unsafeOperation($1, $3);
 		}
 		$$=ST_addTmp(g_st, p_si);
 		Quad q=Q_gen(DIV_I, $1, $3, $$);
 		QT_add(g_qt, &q);
 	}
-  ;
+	| expr incr
+	{
+		SymbolInfo *p_si = $1!=NULL ? &$1->info : NULL;
+		$$=$1;
+		if(p_si!=NULL && p_si->type!=INT_T)
+		{
+			MATC_error_unavailableOperator($$);
+		}
+		Quad q=Q_gen($2, $1, ST_lookup(g_st, "__one"), $$);
+		QT_add(g_qt, &q);
+	}
+	;
+
+incr:
+	YPP 		{$$=ADD_I;}
+	| YMM		{$$=SUB_I;}
 
 const :
 	YNUM
@@ -238,10 +249,9 @@ var:
 		$$=ST_lookup(g_st, $1);
 		if($$==NULL)
 		{
-			MATC_error();
 			MATC_error_undeclared($1);
-			free($1);
 		}
+		free($1);
 	}
 	//also YID YINDEX
 	;
@@ -282,7 +292,6 @@ aff_expr:
 
 		if(!S_castFloat(s2, $4))//checks if float casts have to be made and tries to do them
 		{
-			MATC_warning();
 			MATC_warning_unsafeAffectation(s2,$4);
 		}
 		Quad q=Q_gen(AFF_I, $4, NULL, s2);
@@ -292,7 +301,6 @@ aff_expr:
 	{
 		if(!S_castFloat($1, $3))
 		{
-				MATC_warning();
 				MATC_warning_unsafeAffectation($1,$3);
 		}
 		Quad q=Q_gen(AFF_I, $3, NULL, $1);
@@ -307,7 +315,6 @@ condition :
 
 		if(!S_castFloat($1, $3))
 		{
-			MATC_warning();
 			MATC_warning_unsafeComparasion($1, $3);
 		}
 
@@ -349,7 +356,10 @@ condition :
 		$$.trueList		= $2.falseList;
 		$$.falseList	= $2.trueList;
 	}
-  |'(' condition ')'	{$$=$2;}
+  |'(' condition ')'
+	{
+		$$=$2;
+	}
   ;
 
 tag :
@@ -389,6 +399,9 @@ int main(int argc, char **argv)
 	g_qt=QT_gen(128);
 	g_st=ST_gen(128);
 	yyparse();
+	ST_destroy(g_st);
+	QT_destroy(g_qt);
+	fclose(yyin);
   lex_free();
 	return 0;
 }
@@ -396,4 +409,9 @@ int main(int argc, char **argv)
 void yyerror(char *message)
 {
 	fprintf(stderr,"%s\n", message);
+}
+
+int yywarp()
+{
+	return 1;
 }

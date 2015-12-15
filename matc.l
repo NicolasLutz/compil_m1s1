@@ -8,6 +8,8 @@
 #include "quad.h"
 #include "y.tab.h"
 
+#define maxStrTokenLength 8192
+
 int lineno=0; //<initialiser a 0
 
 %}
@@ -28,7 +30,7 @@ reel {entier}("."{entier})?{exposant}?
 
 %%
 
-[+-/()\[\]\{\}^~,;\>\<] {return(yytext[0]);}
+[\*\+\-\/\(\)\[\]\{\}^~,;\>\<] {return(yytext[0]);}
 
 "=="       return(YEQUAL);
 "!="       return(YNEQ);
@@ -38,6 +40,8 @@ reel {entier}("."{entier})?{exposant}?
 "||"	   	 return(YOR);
 "!"	       return(YNOT);
 "="        return(YASSIGN);
+"++"			 return(YPP);
+"--"			 return(YMM);
 "while"    return(YWHILE);
 "do"       return(YDO);
 "if"       return(YIF);
@@ -52,8 +56,8 @@ reel {entier}("."{entier})?{exposant}?
 "main"		 return(YMAIN);
 "return"   return(YRETURN);
 
-{identificateur} {yylval.stringVal=strdup(yytext);
-		         return YID; }
+{identificateur} {yylval.stringVal=strndup(yytext, maxStrTokenLength);
+		         			return YID; }
 
 {entier}     { yylval.intVal=atoi(yytext);
 						  return(YNUM);}
@@ -61,7 +65,7 @@ reel {entier}("."{entier})?{exposant}?
 {reel}     { yylval.floatVal=(float)atof(yytext);
 						 return(YREEL);}
 
-{string}	{yylval.stringVal=strdup(yytext);
+{string}	{yylval.stringVal=strndup(yytext, maxStrTokenLength);
 					return YSTRING;}
 
 {blancs}   { /* On ignore */ }

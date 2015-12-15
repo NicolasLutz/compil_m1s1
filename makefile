@@ -4,7 +4,9 @@ LYFLAGS=-ly -lfl -lm
 SRC=$(wildcard *.c)
 OBJ=$(SRC:.c=.o)
 
-all: yacc lex main remove_obj_only run_test exec
+all: yacc lex main remove_obj_only
+
+all_exec: yacc lex main remove_obj_only run_test exec
 
 exec:
 	spim -f out.s

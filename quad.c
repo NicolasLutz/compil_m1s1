@@ -4,10 +4,10 @@
 #include "quad.h"
 #include "symbol.h"
 
-const char *_g_instrDesc[18]={"Affectation", "Addition", "Substraction", "Multiplication",
-              "Division", "Negation", "Print", "Printf", "Printmat",
+const char *_g_instrDesc[18]={"Affectation", "Add", "Substract", "Multiply",
+              "Divide", "Negate", "Print", "Printf", "Printmat",
               "Label", "Goto", "Geq", "Leq", "Lower", "Greater", "Equal", "Not equal",
-              "Instruction deleted"};
+              "<Deleted>"};
 
 Quad Q_gen(Instruction op, Symbol* arg1, Symbol* arg2, Symbol* res)
 {
@@ -98,7 +98,7 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nmult $t1, $t2\nsw $LO, %s_var\n",
+          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\nmult $t1, $t2\nmflo $t0\nsw $t0, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         case FLOAT_T:
@@ -113,11 +113,11 @@ void Q_writeMIPS(const Quad *q, FILE *f)
       switch(q->arg1->info.type)
       {
         case INT_T:
-          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\ndiv $t1, $t2\nsw $LO, %s_var\n",
+          fprintf(f, "lw $t1, %s_var\nlw $t2, %s_var\ndiv $t1, $t2\nmflo $t0\nsw $t0, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\ndiv $f0, $f1, $f2\ns.s $f0, %s_var\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\ndiv.s $f0, $f1, $f2\ns.s $f0, %s_var\n",
             q->arg1->name, q->arg2->name, q->res->name);
           break;
         default:
@@ -177,7 +177,7 @@ void Q_writeMIPS(const Quad *q, FILE *f)
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.lt.s $f2, $f1, l%d\n", //really now mips ?
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.lt.s $f2, $f1\nbc1t l%d\n", //really now mips ?
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         default:
@@ -192,7 +192,7 @@ void Q_writeMIPS(const Quad *q, FILE *f)
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.le.s $f1, $f2, l%d\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.le.s $f1, $f2\nbc1t l%d\n",
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         default:
@@ -207,7 +207,7 @@ void Q_writeMIPS(const Quad *q, FILE *f)
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.le.s $f2, $f1, l%d\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.le.s $f2, $f1\nbc1t l%d\n",
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
         default:
           break;
@@ -221,7 +221,7 @@ void Q_writeMIPS(const Quad *q, FILE *f)
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         case FLOAT_T:
-          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.lt.s $f1, $f2, l%d\n",
+          fprintf(f, "l.s $f1, %s_var\nl.s $f2, %s_var\nc.lt.s $f1, $f2\nbc1t l%d\n",
             q->arg1->name, q->arg2->name, (unsigned int)q->res);
           break;
         default:
@@ -244,7 +244,7 @@ void Q_writeMIPS(const Quad *q, FILE *f)
 
 void Q_print(const Quad *q)
 {
-  if(q->op>9 && q->op<17) //gotos range
+  if(Q_isGoto(q))
   {
     printf("%12s %12s %12s %12s%d\n",
       InstructionDesc(q->op),
@@ -260,6 +260,9 @@ void Q_print(const Quad *q)
       case LABEL_I:
         printf("Label %d:\n", (unsigned int)q->res);
         break;
+      case NO_INSTRUCTION_I:
+        printf("<Deleted instruction>\n");
+        break;
       default:
         printf("%12s %12s %12s %12s\n",
           InstructionDesc(q->op),
@@ -269,6 +272,11 @@ void Q_print(const Quad *q)
         );
         break;
       }
+}
+
+bool Q_isGoto(const Quad *q)
+{
+  return q->op>9 && q->op<17;  //gotos range
 }
 
 void Q_free(Quad *q)
@@ -433,14 +441,68 @@ void QT_print(const QuadTab *qt)
   }
 }
 
-void QT_writeMIPS(const QuadTab *qt, FILE *f)
+void QT_writeMIPS(QuadTab *qt, FILE *f)
 {
-  assert(f!=NULL);
+  assert(qt!=NULL && f!=NULL);
+  QT_mergeLabels(qt); //lvl 0 optimization (necessary)
+  QT_print(qt);
   unsigned int headIndex=0;
   while(headIndex!=qt->index)
   {
     Q_writeMIPS(&qt->tab[headIndex++], f);
     if(headIndex>=qt->size)
+    {
+      qt=qt->next;
+      headIndex=0;
+    }
+  }
+}
+
+void QT_mergeLabels(QuadTab *qt) //by the way this is O(n^2)
+{//merges labels when there are several adjacent, instead of writing NOP everytime.
+  assert(qt!=NULL);
+  QuadTab *qtBase=qt;
+  Symbol *previousLabel=NULL; //label of the previous quad if it was a label or NULL
+  unsigned int headIndex=0;
+  while(headIndex!=qt->index)
+  {
+    if(qt->tab[headIndex].op==LABEL_I)
+    {
+      if(previousLabel!=NULL)
+      {
+        qt->tab[headIndex].op=NO_INSTRUCTION_I;
+        QT_replaceGotos(qtBase, previousLabel, qt->tab[headIndex].res);
+        fprintf(stderr, "replaced label %d with label %d\n",
+          (unsigned int)qt->tab[headIndex].res, (unsigned int)previousLabel);
+      }
+      else
+      {
+        previousLabel=qt->tab[headIndex].res;
+      }
+    }
+    else if(qt->tab[headIndex].op!=NO_INSTRUCTION_I)
+    {
+      previousLabel=NULL;
+    }
+    if(++headIndex>=qt->size)
+    {
+      qt=qt->next;
+      headIndex=0;
+    }
+  }
+}
+
+void QT_replaceGotos(QuadTab *qt, Symbol *lblDest, Symbol *lblSrc)
+{
+  assert(qt!=NULL && lblDest!=NULL && lblSrc!=NULL);
+  unsigned int headIndex=0;
+  while(headIndex!=qt->index)
+  {
+    if(qt->tab[headIndex].res==lblSrc && Q_isGoto(&qt->tab[headIndex]))
+    {
+      qt->tab[headIndex].res=lblDest;
+    }
+    if(++headIndex>=qt->size)
     {
       qt=qt->next;
       headIndex=0;
@@ -475,6 +537,8 @@ void MATC_Compile(QuadTab *qt, SymbolTable *st, const char *filename)
   fclose(f);
 }
 
+//for the following, please ensure parameters aren't null !
+
 void MATC_error()
 {
   compiledCorrectly=0;
@@ -483,34 +547,46 @@ void MATC_error()
 
 void MATC_error_undeclared(const char *string)
 {
+  MATC_error();
   fprintf(stderr, "%s undeclared (first use in function)\n",
     string);
 }
+
+void MATC_error_unavailableOperator(const Symbol *s)
+{
+  assert(s!=NULL);
+  MATC_error();
+  fprintf(stderr, "++ and -- only available for int values (%s is of type %s)",
+    s->name, SI_typeToString(s->info.type));
+}
+
+//=================================================================
 
 void MATC_warning()
 {
   fprintf(stderr, "Warning: ");
 }
 
-//for the following, please ensure parameters aren't null !
-
-void MATC_warning_unsafeAffectation(Symbol *s1, Symbol *s2)
+void MATC_warning_unsafeAffectation(const Symbol *s1, const Symbol *s2)
 {
   assert(s1 && s2);
+  MATC_warning();
   fprintf(stderr, "Unsafe affectation from %s of type %s to %s of type %s\n",
     s2->name, SI_typeToString(s2->info.type), s1->name, SI_typeToString(s1->info.type));
 }
 
-void MATC_warning_unsafeOperation(Symbol *s1, Symbol *s2)
+void MATC_warning_unsafeOperation(const Symbol *s1, const Symbol *s2)
 {
   assert(s1 && s2);
+  MATC_warning();
   fprintf(stderr, "Unsafe operation (%s of type %s and %s of type %s)\n",
     s1->name, SI_typeToString(s1->info.type), s2->name, SI_typeToString(s2->info.type));
 }
 
-void MATC_warning_unsafeComparasion(Symbol *s1, Symbol *s2)
+void MATC_warning_unsafeComparasion(const Symbol *s1, const Symbol *s2)
 {
   assert(s1 && s2);
+  MATC_warning();
   fprintf(stderr, "Unsafe comparasion between %s of type %s and %s of type %s\n",
     s1->name, SI_typeToString(s1->info.type), s2->name, SI_typeToString(s2->info.type));
 }

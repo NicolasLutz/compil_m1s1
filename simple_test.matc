@@ -22,6 +22,27 @@ int main()
     printf("Okay! Testing print(f+3)...\n");
     print(f+3);
     printf("\n");
+    printf("Okay! Testing nested if elses...\n");
+    if(2>3+5)
+      printf("Wrong comparasion (2>(3+5))\n");
+    else
+      if(3.0e-19<f+1)
+      {
+        printf("3 levels of if then else ! Testing i++ and i--...");
+        printf("\ni++ = ");
+        print(i++);
+        printf("\ni-- = ");
+        print(i--);
+        printf("\n");
+        printf("Okay! Testing surprise declaration with syscall name and operations !!\n");
+        int syscall=i+3-5*8/2;
+        print(syscall);
+        printf("\nOkay! Testing float operations !!\n");
+        f=f+3.0*7.0/1.0-3.0; /*f+18*/
+        print(f);
+      }
+    else
+      printf("Wrong comparasion (3.0e-19<f+1)");
   }
-  printf("You got it!\n");
+  printf("\nYou got it!\n");
 }

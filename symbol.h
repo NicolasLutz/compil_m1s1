@@ -26,7 +26,7 @@ typedef union Value
 {
     float fVal;
     int iVal;
-    void *mVal;
+    float *mVal;
     char *sVal;
 } Value;
 
@@ -75,7 +75,7 @@ const char      *SI_typeToString(Typename t);
 bool            SI_castFloat(SymbolInfo *si); //casts si into float and returns false if not able to
 
 
-Symbol 		    S_gen(const char *name, SymbolInfo *info);
+Symbol 		    S_gen(char *name, SymbolInfo *info);
 bool          S_castFloat(Symbol *s1, Symbol *s2);
 //^ casts s1 or s2 as float in case of conflict and returns
 //true if no conflict was detected or the cast was successful.
@@ -86,7 +86,7 @@ SymbolList 	    *SL_gen();
 void 		     SL_add(SymbolList *sl, Link *l);
 
 SymbolTable 	*ST_gen(size_t size);
-Symbol 		    *ST_add(SymbolTable *st, const char *name, SymbolInfo *info);
+Symbol 		    *ST_add(SymbolTable *st, char *name, SymbolInfo *info);
 Symbol 		    *ST_addTmp(SymbolTable *st, SymbolInfo *info);
 Symbol 	      *ST_lookup(SymbolTable *st, const char *name);
 void 		       ST_print(const SymbolTable *st);

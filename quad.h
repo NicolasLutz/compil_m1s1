@@ -55,6 +55,7 @@ Quad        Q_genLabel();
 Quad        *Q_concat(Quad *q1, Quad *q2);
 void        Q_writeMIPS(const Quad *q, FILE *f);
 void        Q_print(const Quad *q);
+bool        Q_isGoto(const Quad *q);
 void        Q_free(Quad *q);
 void        Q_backpatch(Quad *q, Symbol *label);
 
@@ -73,19 +74,23 @@ QuadTab     *QT_gen();
 Quad        *QT_add(QuadTab *qt, Quad *quad);
 Quad        *QT_get(const QuadTab *qt, unsigned int index);
 void        QT_print(const QuadTab *qt);
-void        QT_writeMIPS(const QuadTab *qt, FILE *f);
+void        QT_writeMIPS(QuadTab *qt, FILE *f);
+void        QT_mergeLabels(QuadTab *qt);
+void        QT_replaceGotos(QuadTab *qt, Symbol *lblDest, Symbol *lblSrc);
 void        QT_destroy(QuadTab *qt);
 
 //================================================================================================
 
 void MATC_Compile(QuadTab *qt, SymbolTable *st, const char *filename);
 //void MATC_Optimize(QuadTab *qt);
+
 void MATC_error();
 void MATC_error_undeclared(const char *string);
+void MATC_error_unavailableOperator(const Symbol *s);
 
 void MATC_warning();
-void MATC_warning_unsafeAffectation(Symbol *s1, Symbol *s2);
-void MATC_warning_unsafeOperation(Symbol *s1, Symbol *s2);
-void MATC_warning_unsafeComparasion(Symbol *s1, Symbol *s2);
+void MATC_warning_unsafeAffectation(const Symbol *s1, const Symbol *s2);
+void MATC_warning_unsafeOperation(const Symbol *s1, const Symbol *s2);
+void MATC_warning_unsafeComparasion(const Symbol *s1, const Symbol *s2);
 
 #endif

@@ -100,12 +100,12 @@ bool SI_castFloat(SymbolInfo *si)
 	//=============================================================================
 	//=============================================================================
 
-	Symbol S_gen(const char *name, SymbolInfo *info)
+	Symbol S_gen(char *name, SymbolInfo *info)
 	{
 		assert(name!=NULL);
 		Symbol s;
 		s.info=(info!=NULL ? *info : SI_genInt(0));
-		s.name=strndup(name, maxStrLength);
+		s.name=name;//strndup(name, maxStrLength);
 		return s;
 	}
 
@@ -187,8 +187,8 @@ bool SI_castFloat(SymbolInfo *si)
 		}
 		SymbolInfo siZero	=SI_genInt(0);
 		SymbolInfo siOne 	=SI_genInt(1);
-		ST_add(st, "__zero", &siZero);
-		ST_add(st, "__one", &siOne);
+		ST_add(st, strndup("__zero",maxStrLength), &siZero);
+		ST_add(st, strndup("__one",maxStrLength),  &siOne);
 		return st;
 	}
 
@@ -215,7 +215,7 @@ bool SI_castFloat(SymbolInfo *si)
 		return s;
 	}
 
-Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
+Symbol *ST_add(SymbolTable *st, char *name, SymbolInfo *info)
 	//creates or reslace an entry in st with name name and informations info.
 	//returns the symbol.
 	{
@@ -247,8 +247,9 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 	{
 	    static unsigned int count=0;
 			info->cst=true; //it's also a cst
+
 	    sprintf(st->_tmpName,"__tmp_%d",count++);
-	    return ST_add(st,st->_tmpName,info);
+	    return ST_add(st,strndup(st->_tmpName, maxStrLength),info);
 	}
 
 	void ST_print(const SymbolTable *st) //debug purposes only
@@ -326,6 +327,10 @@ Symbol *ST_add(SymbolTable *st, const char *name, SymbolInfo *info)
 			{
 				st->sl[i]->head=l->next;
 				free(l->symbol.name);
+				if(l->symbol.info.type==ARRAY_T)
+					free(l->symbol.info.value.mVal);
+				else if(l->symbol.info.type==STRING_T)
+					free(l->symbol.info.value.sVal);
 				free(l);
 			}
 			free(st->sl[i]);
