@@ -8,6 +8,8 @@ all: yacc lex main remove_obj_only
 
 all_exec: yacc lex main remove_obj_only run_test exec
 
+all_mmcheck: yacc lex main remove_obj_only run_test_mmcheck
+
 exec:
 	spim -f out.s
 
