@@ -387,10 +387,6 @@ condition :
 		$$.trueList		= $2.falseList;
 		$$.falseList	= $2.trueList;
 	}
-  |'(' condition ')'
-	{
-		$$=$2;
-	}
   ;
 
 tag :
