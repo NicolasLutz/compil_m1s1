@@ -70,7 +70,7 @@ char *outFile;
 %left YAND
 %left '+' '-'
 %left '*' '/'
-%left UMINUS
+%right UMINUS
 %left YPP YMM
 %left YNOT
 
@@ -168,6 +168,21 @@ expr :
 	| const
 	{
 		$$=$1;
+	}
+	|'(' expr ')'
+	{
+		$$=$2;
+	}
+
+	|'-' expr %prec UMINUS 
+	{
+	    SymbolInfo *p_si = $2!=NULL ? &$2->info : NULL;
+
+		$$=ST_addTmp(g_st, p_si);
+
+		Quad q=Q_gen(SUB_I, $2, NULL, $$);
+
+		QT_add(g_qt, &q);
 	}
 	| expr '-' expr
 	{
