@@ -44,5 +44,11 @@ int main()
     else
       printf("Wrong comparasion (3.0e-19<f+1)");
   }
+  printf("\nAmazing! This is the final test!! for(int j=0; j<10; j++)");
+  for(int j=0; j<10; j++)
+  {
+    printf("\nj: ");
+    print(j);
+  }
   printf("\nYou got it!\n");
 }

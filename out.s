@@ -18,14 +18,17 @@ __tmp_16_var: .asciiz "Okay! Testing nested if elses...\n"
 __tmp_25_var: .asciiz "3 levels of if then else ! Testing i++ and i--..."
 __tmp_34_var: .word 5
 __tmp_43_var: .float 3.000000
+__tmp_52_var: .asciiz "\nYou got it!\n"
 __tmp_15_var: .asciiz "\n"
 __tmp_26_var: .asciiz "\ni++ = "
 __tmp_37_var: .word 0
 __tmp_40_var: .float 7.000000
+__tmp_51_var: .asciiz "\nj: "
 __tmp_14_var: .float 3.500000
 __tmp_27_var: .asciiz "\ni-- = "
 __tmp_36_var: .word 5
 __tmp_41_var: .float 3.000000
+__tmp_50_var: .word 10
 __tmp_13_var: .float 3.000000
 __tmp_20_var: .word 3
 __tmp_31_var: .word 0
@@ -42,7 +45,8 @@ __tmp_10_var: .float 3.500000
 __tmp_23_var: .float 1.000000
 __tmp_32_var: .word 5
 __tmp_45_var: .float 3.000000
-__tmp_48_var: .asciiz "\nYou got it!\n"
+__tmp_48_var: .asciiz "\nAmazing! This is the final test!! for(int j=0; j<10; j++)"
+__tmp_49_var: .word 0
 __tmp_28_var: .asciiz "\n"
 __tmp_39_var: .float 3.000000
 __tmp_29_var: .asciiz "Okay! Testing surprise declaration with syscall name and operations !!\n"
@@ -52,6 +56,7 @@ __tmp_18_var: .word 3
 __one_var: .word 1
 f_var: .float 3.500000
 i_var: .word 0
+j_var: .word 0
 syscall_var: .word 0
 .text
 main:
@@ -217,6 +222,27 @@ l9: la $a0, __tmp_47_var
 li $v0, 4
 syscall
 l10: la $a0, __tmp_48_var
+li $v0, 4
+syscall
+lw $t0, __tmp_49_var
+sw $t0, j_var
+l13: lw $t1, j_var
+lw $t2, __tmp_50_var
+blt $t1, $t2, l15
+j l16
+l14: lw $t1, j_var
+lw $t2, __one_var
+add $t0, $t1, $t2
+sw $t0, j_var
+j l13
+l15: la $a0, __tmp_51_var
+li $v0, 4
+syscall
+li $v0, 1
+lw $a0, j_var
+syscall
+j l14
+l16: la $a0, __tmp_52_var
 li $v0, 4
 syscall
 jr $ra

@@ -43,6 +43,7 @@ reel {entier}("."{entier})?{exposant}?
 "++"			 return(YPP);
 "--"			 return(YMM);
 "while"    return(YWHILE);
+"for"			 return(YFOR);
 "do"       return(YDO);
 "if"       return(YIF);
 "else"     return(YELSE);

@@ -42,7 +42,7 @@ char *outFile;
 }
 
 
-%token YASSIGN YWHILE YDO YIF YELSE
+%token YASSIGN YWHILE YFOR YDO YIF YELSE
 %token YEQUAL YNEQ YTRUE YFALSE YOR
 %token YINT YFLOAT YPRINT YPRINTF YPRINTMAT
 %token YLEQ YGEQ YMAIN YRETURN YEOF YPP YMM
@@ -129,6 +129,7 @@ stmt :
  	| var '=' expr ';'
  	| if_stmt
  	| while_stmt
+	| for_stmt
  	| '{' stmt_list '}'
  	| return_stmt ';'
 
@@ -267,6 +268,21 @@ while_stmt :
 		QL_backpatch($4.trueList, $6);
 		QL_backpatch($4.falseList, QT_add(g_qt, &qDone));
 	}
+
+for_stmt :
+	YFOR '(' aff_expr ';' tag condition ';' tag expr tagGoto ')' tag stmt
+	{
+		Quad qFor	=Q_gen(GOTO_I, NULL, NULL, $8->res);
+		Quad qDone 	=Q_genLabel(); //tag invisible
+
+		QT_add(g_qt, &qFor);
+
+		QL_backpatch($10, $5); //apres expr -> tag de condition
+
+		QL_backpatch($6.trueList, $12); //condition true -> avant-dernier tag
+		QL_backpatch($6.falseList, QT_add(g_qt, &qDone));
+	}
+
 if_stmt :
 	YIF '(' condition ')' tag stmt %prec NO_ELSE
 	{
